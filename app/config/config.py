@@ -8,6 +8,9 @@ basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
+    # 密钥配置
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-please-change-in-production')
+    
     # 数据库配置
     db_path = os.path.join(basedir, 'db', 'monitoring.db')
     DATABASE_URL = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')

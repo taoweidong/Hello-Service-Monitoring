@@ -1,12 +1,14 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template
+from flask_login import login_required
 from app.database import DatabaseManager
-from app.models import ServerInfo
+from app.models.models import ServerInfo, RemoteServer, AlertInfo
 from app.logger import monitor_logger
 
 # 创建蓝图
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
+@login_required
 def index():
     """主页 - 展示所有服务器信息"""
     try:
@@ -20,6 +22,7 @@ def index():
         return render_template('index.html', servers=[])
 
 @main_bp.route('/server/<ip_address>')
+@login_required
 def server_detail(ip_address):
     """服务器详情页 - 展示特定服务器的详细监控信息"""
     try:
@@ -35,96 +38,46 @@ def server_detail(ip_address):
         monitor_logger.error(f"获取服务器详情失败: {e}")
         return "服务器详情获取失败", 500
 
-@main_bp.route('/api/cpu/history/<ip_address>')
-def api_cpu_history(ip_address):
-    """API - 获取CPU历史数据"""
+@main_bp.route('/alerts')
+@login_required
+def alerts():
+    """预警页面 - 展示所有预警信息"""
     try:
-        limit = request.args.get('limit', 50, type=int)
         db_manager = DatabaseManager()
-        cpu_history = db_manager.get_cpu_history(ip_address, limit)
+        # 获取最新的预警信息
+        alerts = db_manager.session.query(AlertInfo).order_by(AlertInfo.timestamp.desc()).limit(100).all()
         db_manager.close()
         
-        # 转换为图表可用格式
-        timestamps = [data['timestamp'].strftime('%Y-%m-%d %H:%M:%S') for data in cpu_history]
-        cpu_percents = [data['cpu_percent'] for data in cpu_history]
-        
-        return jsonify({
-            'timestamps': timestamps,
-            'cpu_percents': cpu_percents
-        })
+        return render_template('alerts.html', alerts=alerts)
     except Exception as e:
-        monitor_logger.error(f"获取CPU历史数据失败: {e}")
-        return jsonify({'error': '获取数据失败'}), 500
+        monitor_logger.error(f"获取预警信息失败: {e}")
+        return render_template('alerts.html', alerts=[])
 
-@main_bp.route('/api/memory/history/<ip_address>')
-def api_memory_history(ip_address):
-    """API - 获取内存历史数据"""
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        db_manager = DatabaseManager()
-        memory_history = db_manager.get_memory_history(ip_address, limit)
-        db_manager.close()
-        
-        # 转换为图表可用格式
-        timestamps = [data['timestamp'].strftime('%Y-%m-%d %H:%M:%S') for data in memory_history]
-        memory_percents = [data['percent'] for data in memory_history]
-        
-        return jsonify({
-            'timestamps': timestamps,
-            'memory_percents': memory_percents
-        })
-    except Exception as e:
-        monitor_logger.error(f"获取内存历史数据失败: {e}")
-        return jsonify({'error': '获取数据失败'}), 500
-
-@main_bp.route('/api/disk/history/<ip_address>')
-def api_disk_history(ip_address):
-    """API - 获取磁盘历史数据"""
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        db_manager = DatabaseManager()
-        disk_history = db_manager.get_disk_history(ip_address, limit)
-        db_manager.close()
-        
-        # 转换为图表可用格式
-        timestamps = [data['timestamp'].strftime('%Y-%m-%d %H:%M:%S') for data in disk_history]
-        disk_percents = [data['percent'] for data in disk_history]
-        
-        return jsonify({
-            'timestamps': timestamps,
-            'disk_percents': disk_percents
-        })
-    except Exception as e:
-        monitor_logger.error(f"获取磁盘历史数据失败: {e}")
-        return jsonify({'error': '获取数据失败'}), 500
-
-@main_bp.route('/api/server/list')
-def api_server_list():
-    """API - 获取服务器列表"""
+@main_bp.route('/reports')
+@login_required
+def reports():
+    """报表页面 - 展示系统报表"""
     try:
         db_manager = DatabaseManager()
+        # 获取服务器列表用于报表
         servers = db_manager.session.query(ServerInfo).all()
         db_manager.close()
         
-        server_list = []
-        for server in servers:
-            server_data = {
-                'id': server.id,
-                'ip_address': server.ip_address,
-                'hostname': server.hostname,
-                'created_at': None
-            }
-            
-            # 安全地处理created_at字段
-            if hasattr(server, 'created_at') and server.created_at is not None:
-                try:
-                    server_data['created_at'] = server.created_at.strftime('%Y-%m-%d %H:%M:%S')
-                except:
-                    server_data['created_at'] = str(server.created_at)
-            
-            server_list.append(server_data)
-        
-        return jsonify(server_list)
+        return render_template('reports.html', servers=servers)
     except Exception as e:
-        monitor_logger.error(f"获取服务器列表失败: {e}")
-        return jsonify({'error': '获取数据失败'}), 500
+        monitor_logger.error(f"获取报表数据失败: {e}")
+        return render_template('reports.html', servers=[])
+
+@main_bp.route('/remote-servers')
+@login_required
+def remote_servers():
+    """远程服务器管理页面"""
+    try:
+        db_manager = DatabaseManager()
+        remote_servers = db_manager.session.query(RemoteServer).all()
+        db_manager.close()
+        
+        return render_template('remote_servers.html', remote_servers=remote_servers)
+    except Exception as e:
+        monitor_logger.error(f"获取远程服务器列表失败: {e}")
+        return render_template('remote_servers.html', remote_servers=[])

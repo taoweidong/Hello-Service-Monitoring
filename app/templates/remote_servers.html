@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}远程服务器管理 - 服务器监控系统{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">远程服务器管理</h1>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServerModal">
+                <i class="bi bi-plus-circle me-1"></i>添加服务器
+            </button>
+        </div>
+        <hr class="my-3">
+    </div>
+</div>
+
+<!-- 服务器列表 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-hdd-network me-2 text-primary"></i>远程服务器列表
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if remote_servers %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>名称</th>
+                                <th>IP地址</th>
+                                <th>用户名</th>
+                                <th>端口</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for server in remote_servers %}
+                            <tr>
+                                <td>{{ server.name }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary">{{ server.ip_address }}</span>
+                                </td>
+                                <td>{{ server.username }}</td>
+                                <td>{{ server.port }}</td>
+                                <td>{{ server.created_at or '未知' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger delete-server" 
+                                            data-server-id="{{ server.id }}">
+                                        <i class="bi bi-trash me-1"></i>删除
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-hdd-network text-muted fs-1 mb-3"></i>
+                    <h6 class="text-muted">暂无远程服务器</h6>
+                    <p class="text-muted small">点击右上角按钮添加远程服务器</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加服务器模态框 -->
+<div class="modal fade" id="addServerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加远程服务器</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addServerForm">
+                    <div class="mb-3">
+                        <label for="serverName" class="form-label">服务器名称</label>
+                        <input type="text" class="form-control" id="serverName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serverIP" class="form-label">IP地址</label>
+                        <input type="text" class="form-control" id="serverIP" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serverUsername" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="serverUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serverPassword" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="serverPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serverPort" class="form-label">端口</label>
+                        <input type="number" class="form-control" id="serverPort" value="22" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="saveServerBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 保存服务器按钮事件
+    document.getElementById('saveServerBtn').addEventListener('click', function() {
+        const name = document.getElementById('serverName').value;
+        const ip = document.getElementById('serverIP').value;
+        const username = document.getElementById('serverUsername').value;
+        const password = document.getElementById('serverPassword').value;
+        const port = document.getElementById('serverPort').value || 22;
+        
+        if (!name || !ip || !username || !password) {
+            alert('请填写所有必填字段');
+            return;
+        }
+        
+        fetch('/api/remote-servers/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                ip_address: ip,
+                username: username,
+                password: password,
+                port: parseInt(port)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('添加失败: ' + data.error);
+            } else {
+                alert('服务器添加成功');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('添加服务器时发生错误');
+        });
+    });
+    
+    // 删除服务器按钮事件
+    document.querySelectorAll('.delete-server').forEach(button => {
+        button.addEventListener('click', function() {
+            const serverId = this.getAttribute('data-server-id');
+            
+            if (confirm('确定要删除这个服务器吗？')) {
+                fetch(`/api/remote-servers/${serverId}/delete`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('删除失败: ' + data.error);
+                    } else {
+                        alert('服务器删除成功');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('删除服务器时发生错误');
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

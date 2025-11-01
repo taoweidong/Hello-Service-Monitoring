@@ -1,4 +1,4 @@
-from app.models import Session, ServerInfo, CPUInfo, MemoryInfo, DiskInfo, ProcessInfo, AlertInfo
+from app.models.models import Session, ServerInfo, CPUInfo, MemoryInfo, DiskInfo, ProcessInfo, AlertInfo
 from app.logger import monitor_logger
 from datetime import datetime
 import json

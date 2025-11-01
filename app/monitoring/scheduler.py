@@ -1,9 +1,10 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.collector import SystemCollector
+from app.services.data_collector import DataCollector
+from app.remote_collector import RemoteSystemCollector
 from app.database import DatabaseManager
-from app.models import init_db
+from app.models.models import init_db, RemoteServer
 from app.logger import monitor_logger
-from app.config import Config
+from app.config.config import Config
 import atexit
 
 # 全局调度器实例
@@ -16,31 +17,64 @@ def collect_and_save_data(app):
             # 初始化数据库
             init_db()
             
-            # 创建采集器和数据库管理器
-            collector = SystemCollector()
+            # 创建数据库管理器
             db_manager = DatabaseManager()
             
-            # 添加服务器信息
+            # 1. 采集本地服务器数据
+            from app.services.local_collector import LocalSystemCollector
+            collector = LocalSystemCollector()
             db_manager.add_server_info(collector.ip_address, collector.hostname)
             
             # 采集所有系统信息
             all_info = collector.collect_all_info()
             
             # 保存数据到数据库
-            if all_info['cpu']:
-                db_manager.save_cpu_info(all_info['cpu'])
+            if all_info and all_info['cpu_info']:
+                db_manager.save_cpu_info(all_info['cpu_info'])
                 
-            if all_info['memory']:
-                db_manager.save_memory_info(all_info['memory'])
+            if all_info and all_info['memory_info']:
+                db_manager.save_memory_info(all_info['memory_info'])
                 
-            if all_info['disk']:
-                db_manager.save_disk_info(all_info['disk'])
+            if all_info and all_info['disk_info']:
+                db_manager.save_disk_info(all_info['disk_info'])
                 
-            if all_info['process']:
-                db_manager.save_process_info(all_info['process'])
+            if all_info and all_info['process_info']:
+                db_manager.save_process_info(all_info['process_info'])
             
             # 检查是否需要预警
-            check_thresholds(app, all_info, collector.ip_address)
+            if all_info:
+                check_thresholds(app, all_info, collector.ip_address)
+            
+            # 2. 采集远程服务器数据
+            session = db_manager.session
+            remote_servers = session.query(RemoteServer).all()
+            
+            for remote_server in remote_servers:
+                try:
+                    remote_collector = RemoteSystemCollector(remote_server)
+                    remote_info = remote_collector.collect_all_info()
+                    
+                    # 添加服务器信息
+                    hostname = 'unknown'
+                    if remote_info and remote_info.get('cpu_info'):
+                        hostname = f"server-{remote_server.ip_address}"
+                    db_manager.add_server_info(remote_server.ip_address, hostname)
+                    
+                    # 保存数据到数据库
+                    if remote_info and remote_info.get('cpu_info'):
+                        db_manager.save_cpu_info(remote_info['cpu_info'])
+                        
+                    if remote_info and remote_info.get('memory_info'):
+                        db_manager.save_memory_info(remote_info['memory_info'])
+                        
+                    if remote_info and remote_info.get('disk_info'):
+                        db_manager.save_disk_info(remote_info['disk_info'])
+                    
+                    # 检查是否需要预警
+                    if remote_info:
+                        check_thresholds(app, remote_info, remote_server.ip_address)
+                except Exception as e:
+                    monitor_logger.error(f"采集远程服务器 {remote_server.ip_address} 数据失败: {e}")
             
             db_manager.close()
             monitor_logger.info("数据采集和保存完成")
@@ -53,16 +87,16 @@ def check_thresholds(app, all_info, ip_address):
     from app.monitoring.alert import check_and_alert
     
     # 检查CPU阈值
-    if all_info['cpu'] and all_info['cpu']['cpu_percent'] > Config.CPU_THRESHOLD:
-        check_and_alert(app, ip_address, 'cpu', f"CPU使用率过高: {all_info['cpu']['cpu_percent']}%")
+    if all_info.get('cpu_info') and all_info['cpu_info'].get('cpu_percent', 0) > Config.CPU_THRESHOLD:
+        check_and_alert(app, ip_address, 'cpu', f"CPU使用率过高: {all_info['cpu_info']['cpu_percent']}%")
     
     # 检查内存阈值
-    if all_info['memory'] and all_info['memory']['percent'] > Config.MEMORY_THRESHOLD:
-        check_and_alert(app, ip_address, 'memory', f"内存使用率过高: {all_info['memory']['percent']}%")
+    if all_info.get('memory_info') and all_info['memory_info'].get('percent', 0) > Config.MEMORY_THRESHOLD:
+        check_and_alert(app, ip_address, 'memory', f"内存使用率过高: {all_info['memory_info']['percent']}%")
     
     # 检查磁盘阈值
-    if all_info['disk'] and all_info['disk']['percent'] > Config.DISK_THRESHOLD:
-        check_and_alert(app, ip_address, 'disk', f"磁盘使用率过高: {all_info['disk']['percent']}%")
+    if all_info.get('disk_info') and all_info['disk_info'].get('percent', 0) > Config.DISK_THRESHOLD:
+        check_and_alert(app, ip_address, 'disk', f"磁盘使用率过高: {all_info['disk_info']['percent']}%")
 
 def process_alerts_job(app):
     """处理未发送的预警信息任务"""
