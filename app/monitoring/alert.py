@@ -55,8 +55,13 @@ def send_email_alert(app, alert_type, message):
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
         
         # 连接SMTP服务器并发送邮件
-        server = smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT)
-        server.starttls()
+        if Config.MAIL_PORT == 465:
+            # 使用SSL连接
+            server = smtplib.SMTP_SSL(Config.MAIL_SERVER, Config.MAIL_PORT)
+        else:
+            # 使用STARTTLS连接
+            server = smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT)
+            server.starttls()
         server.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
         text = msg.as_string()
         server.sendmail(Config.MAIL_DEFAULT_SENDER, Config.ADMIN_EMAIL, text)

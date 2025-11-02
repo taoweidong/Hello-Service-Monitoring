@@ -61,8 +61,13 @@ class AlertService:
             msg.attach(MIMEText(body, 'plain', 'utf-8'))
             
             # 发送邮件
-            server = smtplib.SMTP(self.config.MAIL_SERVER, self.config.MAIL_PORT)
-            server.starttls()
+            if self.config.MAIL_PORT == 465:
+                # 使用SSL连接
+                server = smtplib.SMTP_SSL(self.config.MAIL_SERVER, self.config.MAIL_PORT)
+            else:
+                # 使用STARTTLS连接
+                server = smtplib.SMTP(self.config.MAIL_SERVER, self.config.MAIL_PORT)
+                server.starttls()
             server.login(self.config.MAIL_USERNAME, self.config.MAIL_PASSWORD)
             text = msg.as_string()
             server.sendmail(self.config.MAIL_DEFAULT_SENDER, self.config.ADMIN_EMAIL, text)

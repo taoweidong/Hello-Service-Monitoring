@@ -53,10 +53,10 @@ DISK_THRESHOLD=80
 # 邮件配置（用于预警）
 MAIL_SERVER=smtp.example.com
 MAIL_PORT=587
-MAIL_USERNAME=your_username
-MAIL_PASSWORD=your_password
-MAIL_DEFAULT_SENDER=monitor@example.com
-ADMIN_EMAIL=admin@example.com
+MAIL_USERNAME=546642132@qq.com
+MAIL_PASSWORD=luspyjrneugabgaj
+MAIL_DEFAULT_SENDER=546642132@qq.com
+ADMIN_EMAIL=546642132@qq.com
 
 # 初始管理员账号配置
 INITIAL_ADMIN_USERNAME=admin
@@ -142,6 +142,7 @@ Hello-Service-Monitoring/
 3. 定时任务间隔可以根据需要在 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件中调整
 4. 如果使用MySQL数据库，请确保已安装MySQL服务器并创建了monitoring数据库
 5. MySQL数据库适用于大型部署，小型部署可以使用SQLite
+6. QQ邮箱需要开启SMTP服务并使用授权码而非密码进行验证
 
 ## 故障排除
 
