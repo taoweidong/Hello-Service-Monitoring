@@ -58,6 +58,8 @@ def collect_and_save_data(app):
                     hostname = 'unknown'
                     if remote_info and remote_info.get('cpu_info'):
                         hostname = f"server-{remote_server.ip_address}"
+                    elif remote_info and remote_info.get('hostname') and remote_info['hostname'] != 'unknown':
+                        hostname = remote_info['hostname']
                     db_manager.add_server_info(remote_server.ip_address, hostname)
                     
                     # 保存数据到数据库

@@ -170,9 +170,27 @@ class RemoteSystemCollector:
     
     def collect_all_info(self):
         """采集所有远程服务器信息"""
-        return {
-            'cpu': self.collect_cpu_info(),
-            'memory': self.collect_memory_info(),
-            'disk': self.collect_disk_info(),
-            'hostname': self.collect_hostname()
-        }
+        # 首先尝试建立连接，如果连接失败则返回连接失败状态
+        ssh = self._connect()
+        if not ssh:
+            # 返回连接失败的基本信息
+            return {
+                'cpu_info': None,
+                'memory_info': None,
+                'disk_info': None,
+                'hostname': 'unknown',
+                'connection_failed': True
+            }
+        
+        # 连接成功，采集所有信息
+        try:
+            all_info = {
+                'cpu_info': self.collect_cpu_info(),
+                'memory_info': self.collect_memory_info(),
+                'disk_info': self.collect_disk_info(),
+                'hostname': self.collect_hostname(),
+                'connection_failed': False
+            }
+            return all_info
+        finally:
+            ssh.close()

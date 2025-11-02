@@ -4,11 +4,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 import smtplib
-from datetime import datetime
+import socket
+import time
+from datetime import datetime, timedelta
 from app.config.config import Config
 from app.utils.logger import monitor_logger
 from app.services.database import DatabaseManager
-from app.models.models import ServerInfo
+from app.models.models import ServerInfo, AlertInfo
 
 
 class EmailService:
@@ -291,6 +293,10 @@ class EmailService:
                     <td>运行时间:</td>
                     <td>{server_info.get('uptime', 'N/A')}</td>
                 </tr>
+                <tr>
+                    <td>连接状态:</td>
+                    <td>{'<span style="color: red;">连接失败</span>' if server_info.get('connection_failed', False) else '<span style="color: green;">连接成功</span>'}</td>
+                </tr>
             </table>
         </div>
         """
@@ -362,6 +368,98 @@ class EmailService:
         """
         return section
     
+    def _should_send_alert(self, ip_address, alert_type):
+        """检查是否应该发送预警邮件（1小时内相同类型预警不重复发送）"""
+        try:
+            one_hour_ago = datetime.now() - timedelta(hours=1)
+            recent_alerts = self.db_manager.session.query(AlertInfo).filter(
+                AlertInfo.ip_address == ip_address,
+                AlertInfo.alert_type == alert_type,
+                AlertInfo.timestamp >= one_hour_ago,
+                AlertInfo.is_sent == 1
+            ).count()
+            
+            # 如果1小时内已经发送过相同类型的预警，则不发送
+            should_send = recent_alerts == 0
+            monitor_logger.info(f"检查预警发送条件: IP={ip_address}, 类型={alert_type}, 近期预警数={recent_alerts}, 是否发送={should_send}")
+            return should_send
+        except Exception as e:
+            monitor_logger.error(f"检查预警发送条件失败: {e}")
+            # 出错时默认发送
+            return True
+    
+    def _test_smtp_connection(self):
+        """测试SMTP连接"""
+        try:
+            # 检查DNS解析
+            socket.getaddrinfo(self.config.MAIL_SERVER, None)
+            monitor_logger.info(f"SMTP服务器DNS解析成功: {self.config.MAIL_SERVER}")
+            
+            # 测试连接
+            if self.config.MAIL_PORT == 465:
+                server = smtplib.SMTP_SSL(self.config.MAIL_SERVER, self.config.MAIL_PORT, timeout=10)
+            else:
+                server = smtplib.SMTP(self.config.MAIL_SERVER, self.config.MAIL_PORT, timeout=10)
+                server.starttls()
+            
+            server.quit()
+            monitor_logger.info(f"SMTP服务器连接测试成功: {self.config.MAIL_SERVER}:{self.config.MAIL_PORT}")
+            return True
+        except socket.gaierror as e:
+            monitor_logger.error(f"SMTP服务器DNS解析失败: {self.config.MAIL_SERVER}, 错误: {e}")
+            return False
+        except Exception as e:
+            monitor_logger.error(f"SMTP服务器连接测试失败: {self.config.MAIL_SERVER}:{self.config.MAIL_PORT}, 错误: {e}")
+            return False
+    
+    def _send_email_with_retry(self, msg):
+        """带重试机制的邮件发送"""
+        max_retries = 3
+        retry_delay = 5  # 重试间隔（秒）
+        
+        for attempt in range(max_retries):
+            try:
+                monitor_logger.info(f"尝试发送邮件 (第{attempt + 1}/{max_retries}次)")
+                if self.config.MAIL_PORT == 465:
+                    server = smtplib.SMTP_SSL(self.config.MAIL_SERVER, self.config.MAIL_PORT, timeout=30)
+                else:
+                    server = smtplib.SMTP(self.config.MAIL_SERVER, self.config.MAIL_PORT, timeout=30)
+                    server.starttls()
+                
+                server.login(self.config.MAIL_USERNAME, self.config.MAIL_PASSWORD)
+                server.sendmail(self.config.MAIL_DEFAULT_SENDER, self.config.ADMIN_EMAIL, msg.as_string())
+                server.quit()
+                
+                monitor_logger.info(f"邮件发送成功")
+                return True
+                
+            except socket.gaierror as e:
+                monitor_logger.error(f"邮件发送失败 - DNS解析错误 (尝试 {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    monitor_logger.info(f"等待 {retry_delay} 秒后重试...")
+                    time.sleep(retry_delay)
+                else:
+                    return False
+            except smtplib.SMTPAuthenticationError as e:
+                monitor_logger.error(f"邮件发送失败 - SMTP认证错误: {e}")
+                return False
+            except smtplib.SMTPException as e:
+                monitor_logger.error(f"邮件发送失败 - SMTP错误 (尝试 {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    monitor_logger.info(f"等待 {retry_delay} 秒后重试...")
+                    time.sleep(retry_delay)
+                else:
+                    return False
+            except Exception as e:
+                monitor_logger.error(f"邮件发送失败 (尝试 {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    monitor_logger.info(f"等待 {retry_delay} 秒后重试...")
+                    time.sleep(retry_delay)
+                else:
+                    return False
+        
+        return False
+    
     def send_alert_email(self, alert_info, server_info=None, monitor_data=None):
         """发送预警邮件"""
         try:
@@ -369,6 +467,11 @@ class EmailService:
             if not all([self.config.MAIL_SERVER, self.config.MAIL_USERNAME, 
                        self.config.MAIL_PASSWORD, self.config.ADMIN_EMAIL]):
                 monitor_logger.warning("邮件配置不完整，跳过邮件发送")
+                return False
+            
+            # 检查1小时内是否已发送相同类型的预警
+            if not self._should_send_alert(alert_info['ip_address'], alert_info['alert_type']):
+                monitor_logger.info(f"1小时内已发送过相同类型的预警邮件，跳过发送: {alert_info['ip_address']} - {alert_info['alert_type']}")
                 return False
             
             # 如果没有提供服务器信息，从数据库获取
@@ -399,19 +502,16 @@ class EmailService:
             # 添加HTML内容
             msg.attach(MIMEText(html_content, 'html', 'utf-8'))
             
-            # 发送邮件
-            if self.config.MAIL_PORT == 465:
-                server = smtplib.SMTP_SSL(self.config.MAIL_SERVER, self.config.MAIL_PORT)
+            # 发送邮件（带重试机制）
+            monitor_logger.info(f"开始发送预警邮件: {alert_info['ip_address']} - {alert_info['alert_type']}")
+            success = self._send_email_with_retry(msg)
+            
+            if success:
+                monitor_logger.info(f"预警邮件发送成功: {alert_info['ip_address']} - {alert_info['alert_type']}")
             else:
-                server = smtplib.SMTP(self.config.MAIL_SERVER, self.config.MAIL_PORT)
-                server.starttls()
+                monitor_logger.error(f"预警邮件发送失败: {alert_info['ip_address']} - {alert_info['alert_type']}")
             
-            server.login(self.config.MAIL_USERNAME, self.config.MAIL_PASSWORD)
-            server.sendmail(self.config.MAIL_DEFAULT_SENDER, self.config.ADMIN_EMAIL, msg.as_string())
-            server.quit()
-            
-            monitor_logger.info(f"预警邮件发送成功: {alert_info['ip_address']} - {alert_info['alert_type']}")
-            return True
+            return success
             
         except Exception as e:
             monitor_logger.error(f"发送预警邮件失败: {e}")
@@ -420,4 +520,3 @@ class EmailService:
     def close(self):
         """关闭数据库连接"""
         self.db_manager.close()
-

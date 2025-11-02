@@ -43,7 +43,8 @@ def check_and_alert(app, ip_address, alert_type, message, monitor_data=None):
                 'cpu_count': server_info.get('cpu_count', 'N/A'),
                 'total_memory': server_info.get('total_memory', 'N/A'),
                 'total_disk': server_info.get('total_disk', 'N/A'),
-                'uptime': server_info.get('uptime', 'N/A')
+                'uptime': server_info.get('uptime', 'N/A'),
+                'connection_failed': server_info.get('connection_failed', False)
             }
         
         db_manager.close()
@@ -67,6 +68,7 @@ def process_unsent_alerts(app):
         unsent_alerts = db_manager.get_unsent_alerts()
         
         for alert in unsent_alerts:
+            server_info_service = None
             try:
                 # 为每个预警创建对应的ServerInfoService实例
                 server_info_service = ServerInfoService(alert.ip_address)
@@ -89,7 +91,8 @@ def process_unsent_alerts(app):
                         'cpu_count': server_info.get('cpu_count', 'N/A'),
                         'total_memory': server_info.get('total_memory', 'N/A'),
                         'total_disk': server_info.get('total_disk', 'N/A'),
-                        'uptime': server_info.get('uptime', 'N/A')
+                        'uptime': server_info.get('uptime', 'N/A'),
+                        'connection_failed': server_info.get('connection_failed', False)
                     }
                 
                 # 准备预警信息
@@ -104,16 +107,15 @@ def process_unsent_alerts(app):
                 if email_service.send_alert_email(alert_info, server_info_dict, monitor_data):
                     # 标记为已发送
                     db_manager.mark_alert_as_sent(alert.id)
-                
-                # 关闭server_info_service
-                server_info_service.close()
             except Exception as e:
                 monitor_logger.error(f"处理预警 {alert.id} 失败: {e}")
-                # 确保在异常情况下也关闭server_info_service
-                try:
-                    server_info_service.close()
-                except:
-                    pass
+            finally:
+                # 确保在任何情况下都关闭server_info_service
+                if server_info_service:
+                    try:
+                        server_info_service.close()
+                    except:
+                        pass
         
         db_manager.close()
         email_service.close()

@@ -13,24 +13,37 @@ main_bp = Blueprint('main', __name__)
 def index():
     """主页 - 展示所有服务器信息"""
     try:
+        from app.services.server_info_service import ServerInfoService
+        
         db_manager = DatabaseManager()
         servers = db_manager.session.query(ServerInfo).all()
         
-        # 获取每个服务器的当前监控数据
+        # 获取每个服务器的当前监控数据和连接状态
         servers_with_metrics = []
         for server in servers:
+            # 获取服务器详细信息以检查连接状态
+            server_info_service = ServerInfoService(server.ip_address)
+            detailed_info = server_info_service.get_detailed_server_info()
+            server_info_service.close()
+            
             current_data = {
                 'cpu': db_manager.get_latest_cpu_info(server.ip_address),
                 'memory': db_manager.get_latest_memory_info(server.ip_address),
                 'disk': db_manager.get_latest_disk_info(server.ip_address)
             }
+            
+            # 检查连接状态
+            connection_failed = detailed_info.get('connection_failed', False) if detailed_info else False
+            
             # 将SQLAlchemy对象转换为字典，以便模板可以序列化
             server_dict = {
                 'id': server.id,
                 'ip_address': server.ip_address,
                 'hostname': server.hostname,
-                'created_at': server.created_at.strftime('%Y-%m-%d %H:%M:%S') if server.created_at else None
+                'created_at': server.created_at.strftime('%Y-%m-%d %H:%M:%S') if server.created_at is not None else None,
+                'connection_failed': connection_failed  # 添加连接状态
             }
+            
             servers_with_metrics.append({
                 'server': server_dict,  # 使用字典而不是对象
                 'metrics': current_data

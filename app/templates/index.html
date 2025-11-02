@@ -167,9 +167,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    {% if item.server.connection_failed %}
+                                    <span class="badge bg-danger-subtle text-danger">
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>异常
+                                    </span>
+                                    {% else %}
                                     <span class="badge bg-success-subtle text-success">
                                         <i class="bi bi-circle-fill me-1"></i>在线
                                     </span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a href="{{ url_for('main.server_detail', ip_address=item.server.ip_address) }}" 
@@ -270,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 如果有服务器，加载第一个服务器的数据
     try {
-        const servers = {{ servers_with_metrics|tojson if servers_with_metrics else '[]'|safe }};
+        const servers = {{ servers_with_metrics|tojson if servers_with_metrics else '[]' }};
         if (servers && servers.length > 0 && servers[0].server && servers[0].server.ip_address) {
             currentServerIp = servers[0].server.ip_address;
             // 延迟一点加载，确保图表已初始化
@@ -321,7 +327,7 @@ function updateAverageMetrics() {
     // 计算所有服务器的平均指标
     let servers = [];
     try {
-        servers = {{ servers_with_metrics|tojson if servers_with_metrics else '[]'|safe }};
+        servers = {{ servers_with_metrics|tojson if servers_with_metrics else '[]' }};
     } catch (e) {
         console.error('解析服务器数据失败:', e);
         servers = [];
