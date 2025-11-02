@@ -224,6 +224,59 @@ class DatabaseManager:
             self.session.rollback()
             monitor_logger.error(f"标记预警信息为已发送失败: {e}")
     
+    def get_latest_cpu_info(self, ip_address):
+        """获取最新的CPU信息"""
+        try:
+            cpu_data = self.session.query(CPUInfo).filter_by(ip_address=ip_address).order_by(CPUInfo.timestamp.desc()).first()
+            if cpu_data:
+                return {
+                    'timestamp': cpu_data.timestamp,
+                    'cpu_percent': cpu_data.cpu_percent,
+                    'cpu_count': cpu_data.cpu_count,
+                    'cpu_max_freq': cpu_data.cpu_max_freq,
+                    'cpu_min_freq': cpu_data.cpu_min_freq,
+                    'cpu_current_freq': cpu_data.cpu_current_freq
+                }
+            return None
+        except Exception as e:
+            monitor_logger.error(f"获取最新CPU信息失败: {e}")
+            return None
+    
+    def get_latest_memory_info(self, ip_address):
+        """获取最新的内存信息"""
+        try:
+            memory_data = self.session.query(MemoryInfo).filter_by(ip_address=ip_address).order_by(MemoryInfo.timestamp.desc()).first()
+            if memory_data:
+                return {
+                    'timestamp': memory_data.timestamp,
+                    'total': memory_data.total,
+                    'available': memory_data.available,
+                    'used': memory_data.used,
+                    'free': memory_data.free,
+                    'percent': memory_data.percent
+                }
+            return None
+        except Exception as e:
+            monitor_logger.error(f"获取最新内存信息失败: {e}")
+            return None
+    
+    def get_latest_disk_info(self, ip_address):
+        """获取最新的磁盘信息"""
+        try:
+            disk_data = self.session.query(DiskInfo).filter_by(ip_address=ip_address).order_by(DiskInfo.timestamp.desc()).first()
+            if disk_data:
+                return {
+                    'timestamp': disk_data.timestamp,
+                    'total': disk_data.total,
+                    'used': disk_data.used,
+                    'free': disk_data.free,
+                    'percent': disk_data.percent
+                }
+            return None
+        except Exception as e:
+            monitor_logger.error(f"获取最新磁盘信息失败: {e}")
+            return None
+    
     def close(self):
         """关闭数据库连接"""
         self.session.close()

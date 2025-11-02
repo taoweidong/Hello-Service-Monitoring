@@ -88,15 +88,21 @@ def check_thresholds(app, all_info, ip_address):
     
     # 检查CPU阈值
     if all_info.get('cpu_info') and all_info['cpu_info'].get('cpu_percent', 0) > Config.CPU_THRESHOLD:
-        check_and_alert(app, ip_address, 'cpu', f"CPU使用率过高: {all_info['cpu_info']['cpu_percent']}%")
+        check_and_alert(app, ip_address, 'cpu', 
+                       f"CPU使用率过高: {all_info['cpu_info']['cpu_percent']:.2f}% (阈值: {Config.CPU_THRESHOLD}%)",
+                       all_info)
     
     # 检查内存阈值
     if all_info.get('memory_info') and all_info['memory_info'].get('percent', 0) > Config.MEMORY_THRESHOLD:
-        check_and_alert(app, ip_address, 'memory', f"内存使用率过高: {all_info['memory_info']['percent']}%")
+        check_and_alert(app, ip_address, 'memory', 
+                       f"内存使用率过高: {all_info['memory_info']['percent']:.2f}% (阈值: {Config.MEMORY_THRESHOLD}%)",
+                       all_info)
     
     # 检查磁盘阈值
     if all_info.get('disk_info') and all_info['disk_info'].get('percent', 0) > Config.DISK_THRESHOLD:
-        check_and_alert(app, ip_address, 'disk', f"磁盘使用率过高: {all_info['disk_info']['percent']}%")
+        check_and_alert(app, ip_address, 'disk', 
+                       f"磁盘使用率过高: {all_info['disk_info']['percent']:.2f}% (阈值: {Config.DISK_THRESHOLD}%)",
+                       all_info)
 
 def process_alerts_job(app):
     """处理未发送的预警信息任务"""
