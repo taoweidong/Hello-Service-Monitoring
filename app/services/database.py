@@ -130,6 +130,22 @@ class DatabaseManager:
             monitor_logger.error(f"获取CPU历史数据失败: {e}")
             return []
     
+    def get_cpu_history_by_time_range(self, ip_address, start_time, end_time):
+        """根据时间范围获取CPU历史数据"""
+        try:
+            cpu_data = self.session.query(CPUInfo).filter(
+                CPUInfo.ip_address == ip_address,
+                CPUInfo.timestamp >= start_time,
+                CPUInfo.timestamp <= end_time
+            ).order_by(CPUInfo.timestamp.desc()).all()
+            return [{
+                'timestamp': data.timestamp,
+                'cpu_percent': data.cpu_percent
+            } for data in cpu_data]
+        except Exception as e:
+            monitor_logger.error(f"根据时间范围获取CPU历史数据失败: {e}")
+            return []
+    
     def get_memory_history(self, ip_address, limit=100):
         """获取内存历史数据"""
         try:
@@ -142,6 +158,22 @@ class DatabaseManager:
             monitor_logger.error(f"获取内存历史数据失败: {e}")
             return []
     
+    def get_memory_history_by_time_range(self, ip_address, start_time, end_time):
+        """根据时间范围获取内存历史数据"""
+        try:
+            memory_data = self.session.query(MemoryInfo).filter(
+                MemoryInfo.ip_address == ip_address,
+                MemoryInfo.timestamp >= start_time,
+                MemoryInfo.timestamp <= end_time
+            ).order_by(MemoryInfo.timestamp.desc()).all()
+            return [{
+                'timestamp': data.timestamp,
+                'percent': data.percent
+            } for data in memory_data]
+        except Exception as e:
+            monitor_logger.error(f"根据时间范围获取内存历史数据失败: {e}")
+            return []
+    
     def get_disk_history(self, ip_address, limit=100):
         """获取磁盘历史数据"""
         try:
@@ -152,6 +184,22 @@ class DatabaseManager:
             } for data in disk_data]
         except Exception as e:
             monitor_logger.error(f"获取磁盘历史数据失败: {e}")
+            return []
+    
+    def get_disk_history_by_time_range(self, ip_address, start_time, end_time):
+        """根据时间范围获取磁盘历史数据"""
+        try:
+            disk_data = self.session.query(DiskInfo).filter(
+                DiskInfo.ip_address == ip_address,
+                DiskInfo.timestamp >= start_time,
+                DiskInfo.timestamp <= end_time
+            ).order_by(DiskInfo.timestamp.desc()).all()
+            return [{
+                'timestamp': data.timestamp,
+                'percent': data.percent
+            } for data in disk_data]
+        except Exception as e:
+            monitor_logger.error(f"根据时间范围获取磁盘历史数据失败: {e}")
             return []
     
     def get_unsent_alerts(self):

@@ -6,3 +6,6 @@ APScheduler==3.10.4
 loguru==0.7.0
 python-dotenv==1.0.0
 paramiko==3.4.0
+PyMySQL==1.1.0
+mysqlclient==2.2.7
+cryptography==41.0.3

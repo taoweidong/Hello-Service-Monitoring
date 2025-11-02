@@ -12,7 +12,12 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.app import create_app
+from app.models.models import init_db
 
 if __name__ == "__main__":
+    # 初始化数据库
+    init_db()
+    
+    # 启动应用
     app = create_app()
     app.run(host='0.0.0.0', port=5000, debug=True)

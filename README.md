@@ -16,7 +16,7 @@
 
 - **后端**: Python, Flask, SQLAlchemy, APScheduler, psutil
 - **前端**: Bootstrap, Chart.js
-- **数据库**: SQLite
+- **数据库**: MySQL (默认) 或 SQLite
 - **其他**: loguru（日志记录）, python-dotenv（配置管理）
 
 ## 安装和配置
@@ -39,8 +39,8 @@ pip install -r requirements.txt
 编辑 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件，根据需要修改配置：
 
 ```env
-# 数据库配置
-DATABASE_URL=sqlite:///db/monitoring.db
+# 数据库配置 (MySQL)
+DATABASE_URL=mysql+pymysql://root:root@127.0.0.1/monitoring
 
 # 定时任务配置
 SCHEDULE_INTERVAL_MINUTES=2
@@ -57,7 +57,14 @@ MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
 MAIL_DEFAULT_SENDER=monitor@example.com
 ADMIN_EMAIL=admin@example.com
+
+# 初始管理员账号配置
+INITIAL_ADMIN_USERNAME=admin
+INITIAL_ADMIN_PASSWORD=admin123
+INITIAL_ADMIN_EMAIL=admin@example.com
 ```
+
+> 注意：如果要使用SQLite数据库，请将DATABASE_URL修改为：`DATABASE_URL=sqlite:///db/monitoring.db`
 
 ### 4. 创建必要的目录
 
@@ -79,6 +86,7 @@ python run.py
 2. **服务器详情页**: 显示特定服务器的详细监控信息和趋势图
 3. **数据采集**: 系统会自动每2分钟采集一次数据
 4. **预警**: 当资源使用超过阈值时，系统会记录预警信息并通过邮件通知管理员
+5. **管理员登录**: 使用初始账号登录系统，默认账号: `admin`，默认密码: `admin123`（建议首次登录后立即修改密码）
 
 ## API接口
 
@@ -132,7 +140,8 @@ Hello-Service-Monitoring/
 1. 确保系统有足够的权限访问系统资源信息
 2. 邮件配置需要根据实际使用的邮件服务商进行调整
 3. 定时任务间隔可以根据需要在 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件中调整
-4. SQLite数据库适用于小型部署，大型部署建议使用MySQL或PostgreSQL
+4. 如果使用MySQL数据库，请确保已安装MySQL服务器并创建了monitoring数据库
+5. MySQL数据库适用于大型部署，小型部署可以使用SQLite
 
 ## 故障排除
 

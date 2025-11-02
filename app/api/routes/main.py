@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required
 from app.services.database import DatabaseManager
-from app.models.models import ServerInfo, RemoteServer, AlertInfo
+from app.models.models import ServerInfo, RemoteServer, AlertInfo, CPUInfo, MemoryInfo, DiskInfo
 from app.utils.logger import monitor_logger
+from datetime import datetime, timedelta
 
 # 创建蓝图
 main_bp = Blueprint('main', __name__)
@@ -81,3 +82,75 @@ def remote_servers():
     except Exception as e:
         monitor_logger.error(f"获取远程服务器列表失败: {e}")
         return render_template('remote_servers.html', remote_servers=[])
+
+@main_bp.route('/server/<ip_address>/history')
+@login_required
+def server_history(ip_address):
+    """服务器历史数据页面"""
+    try:
+        db_manager = DatabaseManager()
+        server = db_manager.session.query(ServerInfo).filter_by(ip_address=ip_address).first()
+        db_manager.close()
+        
+        if not server:
+            return "服务器未找到", 404
+            
+        return render_template('history.html', server=server)
+    except Exception as e:
+        monitor_logger.error(f"获取服务器历史数据页面失败: {e}")
+        return "服务器历史数据页面获取失败", 500
+
+@main_bp.route('/api/history/<ip_address>')
+@login_required
+def api_history_data(ip_address):
+    """API接口 - 获取服务器历史数据"""
+    try:
+        # 获取时间范围参数
+        range_param = request.args.get('range', '1h')
+        
+        # 计算时间范围
+        end_time = datetime.now()
+        if range_param == '1h':
+            start_time = end_time - timedelta(hours=1)
+        elif range_param == '6h':
+            start_time = end_time - timedelta(hours=6)
+        elif range_param == '24h':
+            start_time = end_time - timedelta(hours=24)
+        elif range_param == '7d':
+            start_time = end_time - timedelta(days=7)
+        else:
+            start_time = end_time - timedelta(hours=1)
+        
+        db_manager = DatabaseManager()
+        
+        # 获取CPU历史数据
+        cpu_data = db_manager.get_cpu_history_by_time_range(ip_address, start_time, end_time)
+        
+        # 获取内存历史数据
+        memory_data = db_manager.get_memory_history_by_time_range(ip_address, start_time, end_time)
+        
+        # 获取磁盘历史数据
+        disk_data = db_manager.get_disk_history_by_time_range(ip_address, start_time, end_time)
+        
+        db_manager.close()
+        
+        # 格式化数据
+        result = {
+            'cpu': [{
+                'timestamp': data['timestamp'].isoformat(),
+                'cpu_percent': data['cpu_percent']
+            } for data in cpu_data],
+            'memory': [{
+                'timestamp': data['timestamp'].isoformat(),
+                'percent': data['percent']
+            } for data in memory_data],
+            'disk': [{
+                'timestamp': data['timestamp'].isoformat(),
+                'percent': data['percent']
+            } for data in disk_data]
+        }
+        
+        return jsonify(result)
+    except Exception as e:
+        monitor_logger.error(f"获取服务器历史数据失败: {e}")
+        return jsonify({'error': '获取历史数据失败'}), 500

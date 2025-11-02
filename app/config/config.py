@@ -13,7 +13,7 @@ class Config:
     
     # 数据库配置
     db_path = os.path.join(basedir, 'db', 'monitoring.db')
-    DATABASE_URL = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')
+    DATABASE_URL = os.getenv('DATABASE_URL', 'mysql+pymysql://root:root@127.0.0.1/monitoring')
     
     # 定时任务配置
     SCHEDULE_INTERVAL_MINUTES = int(os.getenv('SCHEDULE_INTERVAL_MINUTES', 2))
@@ -30,3 +30,8 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'your_password')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'monitor@example.com')
     ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+    
+    # 初始管理员账号配置
+    INITIAL_ADMIN_USERNAME = os.getenv('INITIAL_ADMIN_USERNAME', 'admin')
+    INITIAL_ADMIN_PASSWORD = os.getenv('INITIAL_ADMIN_PASSWORD', 'admin123')
+    INITIAL_ADMIN_EMAIL = os.getenv('INITIAL_ADMIN_EMAIL', 'admin@example.com')
