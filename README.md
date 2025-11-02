@@ -9,6 +9,7 @@
 - **数据可视化**: 使用Chart.js展示数据趋势图
 - **定时采集**: 使用APScheduler定时采集数据（默认每2分钟）
 - **预警机制**: 资源使用超过阈值时触发预警并通过邮件通知
+- **周报功能**: 每周自动生成服务器资源使用报告并通过邮件发送
 - **数据存储**: 使用SQLite数据库存储历史数据
 - **多服务器支持**: 支持监控多台服务器（通过IP地址区分）
 
@@ -86,7 +87,8 @@ python run.py
 2. **服务器详情页**: 显示特定服务器的详细监控信息和趋势图
 3. **数据采集**: 系统会自动每2分钟采集一次数据
 4. **预警**: 当资源使用超过阈值时，系统会记录预警信息并通过邮件通知管理员
-5. **管理员登录**: 使用初始账号登录系统，默认账号: `admin`，默认密码: `admin123`（建议首次登录后立即修改密码）
+5. **周报**: 系统每周一上午9点自动生成并发送服务器资源使用周报
+6. **管理员登录**: 使用初始账号登录系统，默认账号: `admin`，默认密码: `admin123`（建议首次登录后立即修改密码）
 
 ## API接口
 
@@ -122,6 +124,8 @@ Hello-Service-Monitoring/
     ├── models.py         # 数据库模型
     ├── routes.py         # Flask路由
     ├── logger.py         # 日志模块
+    ├── services/         # 业务服务模块
+    │   └── weekly_report_service.py  # 周报服务
     └── monitoring/       # 监控相关模块
         ├── __init__.py
         ├── scheduler.py   # 定时任务调度
@@ -133,7 +137,8 @@ Hello-Service-Monitoring/
 1. **添加更多监控指标**: 可以在 [collector.py](file:///E:/GitHub/Hello-Service-Monitoring/app/collector.py) 中添加更多系统信息采集
 2. **自定义预警阈值**: 修改 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件中的阈值配置
 3. **支持更多数据库**: 修改 [config.py](file:///E:/GitHub/Hello-Service-Monitoring/app/config.py) 中的数据库配置
-4. **添加用户认证**: 可以集成Flask-Login等认证模块
+4. **自定义周报时间**: 可以在 [scheduler.py](file:///E:/GitHub/Hello-Service-Monitoring/app/monitoring/scheduler.py) 中修改周报发送时间
+5. **添加用户认证**: 可以集成Flask-Login等认证模块
 
 ## 注意事项
 

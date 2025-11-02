@@ -271,3 +271,23 @@ def api_server_current(ip_address):
     except Exception as e:
         monitor_logger.error(f"获取服务器当前监控数据失败: {e}")
         return jsonify({'error': '获取当前监控数据失败'}), 500
+
+@main_bp.route('/api/send-weekly-report', methods=['POST'])
+@login_required
+def api_send_weekly_report():
+    """API接口 - 发送周报邮件"""
+    try:
+        from app.services.weekly_report_service import WeeklyReportService
+        
+        # 创建周报服务并发送邮件
+        weekly_report_service = WeeklyReportService()
+        success = weekly_report_service.send_weekly_report_email()
+        weekly_report_service.close()
+        
+        if success:
+            return jsonify({'success': True, 'message': '周报邮件发送成功'})
+        else:
+            return jsonify({'success': False, 'message': '周报邮件发送失败'}), 500
+    except Exception as e:
+        monitor_logger.error(f"发送周报邮件失败: {e}")
+        return jsonify({'success': False, 'message': f'发送周报邮件失败: {str(e)}'}), 500

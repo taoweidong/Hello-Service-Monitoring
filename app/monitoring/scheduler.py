@@ -110,6 +110,14 @@ def process_alerts_job(app):
         from app.monitoring.alert import process_unsent_alerts
         process_unsent_alerts(app)
 
+def send_weekly_report_job(app):
+    """发送周报邮件任务"""
+    with app.app_context():
+        from app.services.weekly_report_service import WeeklyReportService
+        weekly_report_service = WeeklyReportService()
+        weekly_report_service.send_weekly_report_email()
+        weekly_report_service.close()
+
 def start_scheduler(app):
     """启动定时任务调度器"""
     global scheduler
@@ -140,6 +148,19 @@ def start_scheduler(app):
             args=[app],
             id='process_alerts',
             name='处理未发送的预警信息',
+            replace_existing=True
+        )
+        
+        # 添加每周发送周报的任务，每周一上午9点执行
+        scheduler.add_job(
+            func=send_weekly_report_job,
+            trigger="cron",
+            day_of_week=0,  # 0表示周日，1表示周一
+            hour=9,
+            minute=0,
+            args=[app],
+            id='weekly_report',
+            name='发送周报邮件',
             replace_existing=True
         )
         

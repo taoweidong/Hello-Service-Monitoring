@@ -8,9 +8,14 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">仪表板</h1>
-            <button class="btn btn-outline-primary" id="refreshDashboard">
-                <i class="bi bi-arrow-clockwise me-1"></i>刷新数据
-            </button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" id="sendWeeklyReport">
+                    <i class="bi bi-envelope me-1"></i>发送周报
+                </button>
+                <button class="btn btn-outline-primary" id="refreshDashboard">
+                    <i class="bi bi-arrow-clockwise me-1"></i>刷新数据
+                </button>
+            </div>
         </div>
         <hr class="my-3">
     </div>
@@ -224,6 +229,29 @@
     </div>
 </div>
 
+<!-- 周报发送模态框 -->
+<div class="modal fade" id="weeklyReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">发送周报</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status" id="reportSpinner" style="display: none;">
+                        <span class="visually-hidden">发送中...</span>
+                    </div>
+                    <div id="reportMessage"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -273,6 +301,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('refreshServers')?.addEventListener('click', function() {
         location.reload();
+    });
+    
+    // 发送周报按钮事件
+    document.getElementById('sendWeeklyReport')?.addEventListener('click', function() {
+        sendWeeklyReport();
     });
     
     // 自动刷新数据（每2分钟）
@@ -543,6 +576,40 @@ function hideChartPlaceholders() {
     const emptyEl = document.getElementById('chartEmpty');
     if (loadingEl) loadingEl.style.display = 'none';
     if (emptyEl) emptyEl.style.display = 'none';
+}
+
+function sendWeeklyReport() {
+    // 显示模态框
+    const modal = new bootstrap.Modal(document.getElementById('weeklyReportModal'));
+    const spinner = document.getElementById('reportSpinner');
+    const message = document.getElementById('reportMessage');
+    
+    // 重置模态框内容
+    spinner.style.display = 'inline-block';
+    message.innerHTML = '<p class="text-muted">正在发送周报邮件...</p>';
+    
+    modal.show();
+    
+    // 发送请求
+    fetch('/api/send-weekly-report', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        spinner.style.display = 'none';
+        if (data.success) {
+            message.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>周报邮件发送成功！</div>';
+        } else {
+            message.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle me-2"></i>发送失败：' + (data.message || '未知错误') + '</div>';
+        }
+    })
+    .catch(error => {
+        spinner.style.display = 'none';
+        message.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle me-2"></i>发送失败：' + error.message + '</div>';
+    });
 }
 </script>
 {% endblock %}
