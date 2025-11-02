@@ -1,7 +1,7 @@
 import paramiko
 import json
 from datetime import datetime
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 
 class RemoteSystemCollector:
     """远程系统信息采集器"""

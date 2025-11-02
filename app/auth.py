@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from app.models.models import User, Session
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 from datetime import datetime
 
 # 创建认证蓝图

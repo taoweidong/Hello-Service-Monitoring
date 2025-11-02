@@ -1,5 +1,5 @@
 from app.models.models import Session, ServerInfo, CPUInfo, MemoryInfo, DiskInfo, ProcessInfo, AlertInfo
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 from datetime import datetime
 import json
 

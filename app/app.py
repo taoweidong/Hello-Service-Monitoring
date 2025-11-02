@@ -1,8 +1,8 @@
 from flask import Flask
 from app.config.config import Config
-from app.routes import main_bp
+from app.api import main_bp
 from app.auth import auth_bp, login_manager
-from app.api.routes import api_bp
+from app.api import api_bp
 from app.monitoring.scheduler import start_scheduler
 import os
 

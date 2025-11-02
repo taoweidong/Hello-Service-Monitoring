@@ -1,6 +1,6 @@
 from app.models.models import ServerInfo, CPUInfo, MemoryInfo, DiskInfo, ProcessInfo
-from app.database import DatabaseManager
-from app.logger import monitor_logger
+from app.services.database import DatabaseManager
+from app.utils.logger import monitor_logger
 import psutil
 import datetime
 import json

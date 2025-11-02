@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config.config import Config
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 import os
 
 # 创建基类
@@ -156,11 +156,11 @@ class RemoteServer(Base):
     def check_password(self, password):
         """验证密码"""
         from werkzeug.security import check_password_hash
-        return check_password_hash(self.password, password)
+        return check_password_hash(str(self.password), password)
 
 # 创建数据库引擎
 # 更新数据库路径指向新的db目录
-db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db', 'monitoring.db')
+db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'db', 'monitoring.db')
 DATABASE_URL = f"sqlite:///{db_path}"
 
 engine = create_engine(DATABASE_URL, echo=False)

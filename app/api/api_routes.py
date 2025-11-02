@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
-from app.database import DatabaseManager
+from app.services.database import DatabaseManager
 from app.models.models import ServerInfo, RemoteServer, AlertInfo
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 from datetime import datetime
 
 # 创建API蓝图

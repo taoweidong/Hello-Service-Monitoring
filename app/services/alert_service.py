@@ -1,6 +1,6 @@
 from app.models.models import AlertInfo
-from app.database import DatabaseManager
-from app.logger import monitor_logger
+from app.services.database import DatabaseManager
+from app.utils.logger import monitor_logger
 from app.config.config import Config
 import smtplib
 from email.mime.text import MIMEText

@@ -1,10 +1,10 @@
-from app.database import DatabaseManager
-from app.logger import monitor_logger
+from app.services.database import DatabaseManager
+from app.utils.logger import monitor_logger
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from app.config import Config
+from app.config.config import Config
 
 def check_and_alert(app, ip_address, alert_type, message):
     """检查并触发预警"""

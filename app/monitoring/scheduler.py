@@ -1,9 +1,9 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.services.data_collector import DataCollector
-from app.remote_collector import RemoteSystemCollector
-from app.database import DatabaseManager
+from app.services.remote_collector import RemoteSystemCollector
+from app.services.database import DatabaseManager
 from app.models.models import init_db, RemoteServer
-from app.logger import monitor_logger
+from app.utils.logger import monitor_logger
 from app.config.config import Config
 import atexit
 
