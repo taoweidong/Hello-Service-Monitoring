@@ -5,6 +5,7 @@ from .config import Config
 from sqlalchemy import desc
 import json
 import socket
+from loguru import logger
 
 main_bp = Blueprint('main', __name__)
 db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
@@ -43,6 +44,7 @@ def api_server_ip():
         ip = get_server_ip()
         return jsonify({'ip': ip})
     except Exception as e:
+        logger.error(f"获取服务器IP地址时出错: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -100,6 +102,7 @@ def api_system_info():
                     'applications': app_versions
                 })
     except Exception as e:
+        logger.error(f"获取系统信息时出错: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -110,11 +113,11 @@ def api_processes():
         with db_manager.get_session() as session:
             # 获取最新的进程信息
             from .models import ProcessInfo
-            # 获取最近10秒内的进程信息
+            # 获取最近15秒内的进程信息
             from datetime import datetime, timedelta
-            ten_seconds_ago = datetime.utcnow() - timedelta(seconds=15)
+            fifteen_seconds_ago = datetime.utcnow() - timedelta(seconds=15)
             latest_processes = session.query(ProcessInfo).filter(
-                ProcessInfo.timestamp >= ten_seconds_ago
+                ProcessInfo.timestamp >= fifteen_seconds_ago
             ).order_by(desc(ProcessInfo.timestamp)).all()
             
             # 转换为列表格式
@@ -131,6 +134,19 @@ def api_processes():
             
             return jsonify({'processes': processes_list})
     except Exception as e:
+        logger.error(f"获取进程信息时出错: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@main_bp.route('/api/detailed-system-info')
+def api_detailed_system_info():
+    """获取详细系统信息API（实时采集）"""
+    try:
+        from .collector import SystemCollector
+        detailed_info = SystemCollector.get_detailed_system_info()
+        return jsonify(detailed_info)
+    except Exception as e:
+        logger.error(f"获取详细系统信息时出错: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -142,4 +158,5 @@ def api_history():
         # 暂时返回空数据，后续实现
         return jsonify({'history': []})
     except Exception as e:
+        logger.error(f"获取历史数据时出错: {e}")
         return jsonify({'error': str(e)}), 500

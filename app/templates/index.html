@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务器监控系统</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Plotly JS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/plotly.js/2.24.1/plotly.min.js"></script>
+    <style>
+        .metric-card {
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .critical {
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            border-left: 5px solid #ffc107;
+        }
+        .normal {
+            border-left: 5px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <header class="mb-4">
+            <h1 class="text-center">服务器监控系统</h1>
+            <p class="text-center text-muted">实时监控服务器状态</p>
+        </header>
+
+        <!-- 系统概览 -->
+        <section class="mb-4">
+            <h2>系统概览</h2>
+            <div class="row" id="system-overview">
+                <div class="col-md-4 mb-3">
+                    <div class="card metric-card normal">
+                        <div class="card-body">
+                            <h5 class="card-title">CPU使用率</h5>
+                            <h3 class="card-text" id="cpu-percent">--%</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card metric-card normal" id="memory-card">
+                        <div class="card-body">
+                            <h5 class="card-title">内存使用率</h5>
+                            <h3 class="card-text" id="memory-percent">--%</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card metric-card normal" id="disk-card">
+                        <div class="card-body">
+                            <h5 class="card-title">磁盘使用率</h5>
+                            <h3 class="card-text" id="disk-percent">--%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 应用程序版本 -->
+        <section class="mb-4">
+            <h2>应用程序版本</h2>
+            <div class="row" id="app-versions">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Python</h5>
+                            <p class="card-text" id="python-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Java</h5>
+                            <p class="card-text" id="java-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Docker</h5>
+                            <p class="card-text" id="docker-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图表区域 -->
+        <section class="mb-4">
+            <h2>资源使用趋势</h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">内存使用趋势</h5>
+                            <div id="memory-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">磁盘使用趋势</h5>
+                            <div id="disk-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 磁盘详情 -->
+        <section class="mb-4">
+            <h2>磁盘详情</h2>
+            <div class="table-responsive" id="disk-details">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>设备</th>
+                            <th>挂载点</th>
+                            <th>总容量</th>
+                            <th>已使用</th>
+                            <th>可用空间</th>
+                            <th>使用率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="disk-table-body">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 进程列表 -->
+        <section>
+            <h2>进程列表</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>名称</th>
+                            <th>状态</th>
+                            <th>CPU%</th>
+                            <th>内存%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="process-table-body">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 更新系统信息
+        function updateSystemInfo() {
+            fetch('/api/system-info')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新CPU使用率
+                    document.getElementById('cpu-percent').textContent = data.system.cpu_percent.toFixed(2) + '%';
+                    
+                    // 更新内存使用率
+                    const memoryPercent = data.system.memory_percent;
+                    document.getElementById('memory-percent').textContent = memoryPercent.toFixed(2) + '%';
+                    const memoryCard = document.getElementById('memory-card');
+                    memoryCard.className = 'card metric-card ' + 
+                        (memoryPercent > 80 ? 'critical' : memoryPercent > 60 ? 'warning' : 'normal');
+                    
+                    // 更新磁盘使用率
+                    let maxDiskPercent = 0;
+                    data.disks.forEach(disk => {
+                        if (disk.percent > maxDiskPercent) {
+                            maxDiskPercent = disk.percent;
+                        }
+                    });
+                    document.getElementById('disk-percent').textContent = maxDiskPercent.toFixed(2) + '%';
+                    const diskCard = document.getElementById('disk-card');
+                    diskCard.className = 'card metric-card ' + 
+                        (maxDiskPercent > 80 ? 'critical' : maxDiskPercent > 60 ? 'warning' : 'normal');
+                    
+                    // 更新应用程序版本
+                    document.getElementById('python-version').textContent = data.applications.python || '未安装';
+                    document.getElementById('java-version').textContent = data.applications.java || '未安装';
+                    document.getElementById('docker-version').textContent = data.applications.docker || '未安装';
+                    
+                    // 更新磁盘详情表格
+                    const diskTableBody = document.getElementById('disk-table-body');
+                    diskTableBody.innerHTML = '';
+                    data.disks.forEach(disk => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${disk.device}</td>
+                            <td>${disk.mountpoint}</td>
+                            <td>${formatBytes(disk.total)}</td>
+                            <td>${formatBytes(disk.used)}</td>
+                            <td>${formatBytes(disk.free)}</td>
+                            <td>${disk.percent.toFixed(2)}%</td>
+                        `;
+                        diskTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取系统信息失败:', error);
+                });
+        }
+        
+        // 更新进程列表
+        function updateProcessList() {
+            fetch('/api/processes')
+                .then(response => response.json())
+                .then(data => {
+                    const processTableBody = document.getElementById('process-table-body');
+                    processTableBody.innerHTML = '';
+                    
+                    // 按CPU使用率排序，取前20个进程
+                    const sortedProcesses = data.processes.sort((a, b) => b.cpu_percent - a.cpu_percent).slice(0, 20);
+                    
+                    sortedProcesses.forEach(proc => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${proc.pid}</td>
+                            <td>${proc.name}</td>
+                            <td>${proc.status}</td>
+                            <td>${proc.cpu_percent.toFixed(2)}</td>
+                            <td>${proc.memory_percent.toFixed(2)}</td>
+                        `;
+                        processTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取进程列表失败:', error);
+                });
+        }
+        
+        // 格式化字节数
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初次加载数据
+            updateSystemInfo();
+            updateProcessList();
+            
+            // 每5秒自动刷新数据
+            setInterval(() => {
+                updateSystemInfo();
+                updateProcessList();
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

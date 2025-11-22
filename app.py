@@ -7,30 +7,36 @@
 
 import os
 import sys
-import logging
+from loguru import logger
 from logging.handlers import RotatingFileHandler
 from app import create_app
 from app.monitoring.scheduler import MonitoringScheduler
 
-# 配置日志
+# 配置loguru日志
 def setup_logging():
     """设置日志配置"""
     if not os.path.exists('logs'):
         os.mkdir('logs')
     
-    file_handler = RotatingFileHandler('logs/monitoring.log', maxBytes=10240, backupCount=10)
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-    ))
-    file_handler.setLevel(logging.INFO)
+    # 移除默认的日志处理器
+    logger.remove()
     
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    # 添加文件日志处理器
+    logger.add(
+        "logs/monitoring.log",
+        rotation="10 MB",
+        retention="10 days",
+        level="INFO",
+        encoding="utf-8",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}"
+    )
     
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    # 添加控制台日志处理器
+    logger.add(
+        sys.stdout,
+        level="INFO",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    )
     
     return logger
 
@@ -60,7 +66,7 @@ def main():
             debug=os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
         )
     except KeyboardInterrupt:
-        print("正在关闭服务器监控系统...")
+        logger.info("正在关闭服务器监控系统...")
     finally:
         # 关闭调度器
         scheduler.shutdown()

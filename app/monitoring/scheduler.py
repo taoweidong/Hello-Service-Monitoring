@@ -2,7 +2,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from datetime import datetime
-import logging
+from loguru import logger
 from typing import Optional
 
 from app.collector import SystemCollector
@@ -20,7 +20,7 @@ class MonitoringScheduler:
             job_defaults={'coalesce': False, 'max_instances': 3}
         )
         self.db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
     
     def start(self):
         """启动调度器"""
