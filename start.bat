@@ -6,11 +6,11 @@ echo.
 
 REM 创建虚拟环境
 echo 创建虚拟环境...
-python -m venv venv
+python -m venv .venv
 
 REM 激活虚拟环境
 echo 激活虚拟环境...
-call venv\Scripts\activate
+call .venv\Scripts\activate
 
 REM 安装依赖
 echo 安装依赖...

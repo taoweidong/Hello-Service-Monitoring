@@ -2,12 +2,14 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from datetime import datetime
+import time
 from loguru import logger
 from typing import Optional
 
 from app.collector import SystemCollector
 from app.database import DatabaseManager
 from app.config import Config
+from app.utils import get_current_local_time
 
 
 class MonitoringScheduler:
@@ -15,9 +17,11 @@ class MonitoringScheduler:
     
     def __init__(self):
         """初始化调度器"""
+        # 配置调度器使用本地时区
         self.scheduler = BackgroundScheduler(
             executors={'default': ThreadPoolExecutor(20)},
-            job_defaults={'coalesce': False, 'max_instances': 3}
+            job_defaults={'coalesce': False, 'max_instances': 3},
+            timezone=Config.LOCAL_TIMEZONE  # 使用配置中的本地时区
         )
         self.db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
         self.logger = logger
@@ -45,7 +49,8 @@ class MonitoringScheduler:
             day_of_week=0,  # 每周日
             hour=9,  # 上午9点
             minute=0,
-            id='generate_weekly_report'
+            id='generate_weekly_report',
+            timezone=Config.LOCAL_TIMEZONE  # 使用配置中的本地时区
         )
         
         self.scheduler.start()
@@ -117,10 +122,12 @@ class MonitoringScheduler:
             return
         
         try:
+            # 使用本地时间
+            current_time = get_current_local_time().strftime('%Y-%m-%d %H:%M:%S')
             payload = {
                 "msgtype": "text",
                 "text": {
-                    "content": f"[服务器监控预警] {message}\n时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                    "content": f"[服务器监控预警] {message}\n时间: {current_time}"
                 }
             }
             

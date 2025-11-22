@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple, Optional
 import subprocess
 import os
 from loguru import logger
+from .utils import get_current_local_time
 
 
 class SystemCollector:
@@ -102,6 +103,10 @@ class SystemCollector:
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     # 忽略无法访问的进程
                     continue
+            
+            # 按内存占用率排序，取前20个进程
+            processes.sort(key=lambda x: x['memory_percent'], reverse=True)
+            processes = processes[:20]
                     
             logger.info(f"进程信息采集成功，共采集 {len(processes)} 个进程")
         except Exception as e:

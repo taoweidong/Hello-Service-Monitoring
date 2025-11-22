@@ -219,6 +219,121 @@
                 });
         }
         
+        // 绘制内存使用趋势图
+        function drawMemoryChart(historyData) {
+            console.log("drawMemoryChart-historyData", historyData)
+            if (!historyData || historyData.length === 0) return;
+            
+            // 提取时间和内存使用率数据
+            const timestamps = historyData.map(item => new Date(item.timestamp));
+            console.log("historyData", historyData)
+            console.log("timestamps", timestamps)
+            const memoryPercents = historyData.map(item => item.memory_percent);
+            
+            // 创建图表数据
+            const chartData = [{
+                x: timestamps,
+                y: memoryPercents,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '内存使用率',
+                line: {shape: 'spline'},
+                marker: {size: 6}
+            }];
+            
+            // 图表布局
+            const layout = {
+                title: '内存使用趋势',
+                xaxis: {title: '时间'},
+                yaxis: {title: '使用率 (%)', range: [0, 100]},
+                margin: {t: 30, l: 50, r: 30, b: 50}
+            };
+            
+            // 检查图表是否已经存在
+            const memoryChart = document.getElementById('memory-chart');
+            if (memoryChart.innerHTML.trim() !== '') {
+                // 更新现有图表数据
+                Plotly.react('memory-chart', chartData, layout);
+            } else {
+                // 绘制新图表
+                Plotly.newPlot('memory-chart', chartData, layout);
+            }
+        }
+        
+        // 绘制磁盘使用趋势图
+        function drawDiskChart(historyData) {
+            if (!historyData || Object.keys(historyData).length === 0) return;
+            
+            // 创建图表数据
+            const chartData = [];
+            
+            // 为每个磁盘设备创建一条线
+            for (const device in historyData) {
+                const deviceData = historyData[device];
+                const timestamps = deviceData.map(item => new Date(item.timestamp));
+                const percents = deviceData.map(item => item.percent);
+                
+                chartData.push({
+                    x: timestamps,
+                    y: percents,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: device,
+                    line: {shape: 'spline'},
+                    marker: {size: 6}
+                });
+            }
+            
+            // 图表布局
+            const layout = {
+                title: '磁盘使用趋势',
+                xaxis: {title: '时间'},
+                yaxis: {title: '使用率 (%)', range: [0, 100]},
+                margin: {t: 30, l: 50, r: 30, b: 50}
+            };
+            
+            // 检查图表是否已经存在
+            const diskChart = document.getElementById('disk-chart');
+            if (diskChart.innerHTML.trim() !== '') {
+                // 更新现有图表数据
+                Plotly.react('disk-chart', chartData, layout);
+            } else {
+                // 绘制新图表
+                Plotly.newPlot('disk-chart', chartData, layout);
+            }
+        }
+        
+        // 更新图表数据
+        function updateCharts() {
+            // 获取内存历史数据
+            fetch('/api/memory-info')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("data", data)
+                    if (data.history && data.history.length > 0) {
+                        // 使用.slice()创建数组副本，避免引用问题
+                        drawMemoryChart(data.history.slice());
+                    }
+                })
+                .catch(error => {
+                    console.error('获取内存历史数据失败:', error);
+                });
+            
+            // 获取磁盘历史数据
+            fetch('/api/disk-info')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.history && Object.keys(data.history).length > 0) {
+                        // 创建深拷贝，避免引用问题
+                        const historyCopy = JSON.parse(JSON.stringify(data.history));
+                        drawDiskChart(historyCopy);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取磁盘历史数据失败:', error);
+                });
+        }
+        
         // 更新进程列表
         function updateProcessList() {
             fetch('/api/processes')
@@ -261,12 +376,8 @@
             // 初次加载数据
             updateSystemInfo();
             updateProcessList();
-            
-            // 每5秒自动刷新数据
-            setInterval(() => {
-                updateSystemInfo();
-                updateProcessList();
-            }, 5000);
+            console.log("添加图表更新");
+            updateCharts(); // 添加图表更新
         });
     </script>
 </body>

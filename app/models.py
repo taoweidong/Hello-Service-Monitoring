@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from typing import Optional
+from .utils import get_current_local_time
 
 Base = declarative_base()
 
@@ -12,7 +13,7 @@ class SystemInfo(Base):
     __tablename__ = 'system_info'
     
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=get_current_local_time)
     cpu_percent = Column(Float)
     memory_percent = Column(Float)
     disk_percent = Column(Float)
@@ -28,7 +29,7 @@ class ProcessInfo(Base):
     __tablename__ = 'process_info'
     
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=get_current_local_time)
     pid = Column(Integer)
     name = Column(String(100))
     status = Column(String(50))
@@ -45,7 +46,7 @@ class DiskInfo(Base):
     __tablename__ = 'disk_info'
     
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=get_current_local_time)
     device = Column(String(100))  # 设备名
     mountpoint = Column(String(200))  # 挂载点
     total = Column(Float)  # 总空间
@@ -62,7 +63,7 @@ class AlertRecord(Base):
     __tablename__ = 'alert_record'
     
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=get_current_local_time)
     alert_type = Column(String(50))  # 预警类型
     message = Column(Text)  # 预警信息
     is_sent = Column(Integer, default=0)  # 是否已发送

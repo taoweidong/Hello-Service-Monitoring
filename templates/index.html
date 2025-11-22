@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>服务器监控系统</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Plotly JS -->
     <script src="{{ url_for('static', filename='plotly.min.js') }}"></script>
     <style>
@@ -384,7 +384,7 @@
                         <div class="card-body text-center">
                             <div class="mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-boxes text-info" viewBox="0 0 16 16">
-                                    <path d="M.5 1A.5.5 0 0 0 0 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 1.5 1H.5zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 3.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 5.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 7.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-1z"/>
+                                    <path d="M.5 1A.5.5 0 0 0 0 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 1.5 1H.5zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 3.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-1z"/>
                                     <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5v7a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-7zM1.5 4a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-13zM1 7.5v3a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-3H1z"/>
                                 </svg>
                             </div>
@@ -418,6 +418,9 @@
         <!-- 磁盘详情 -->
         <section class="mb-5">
             <h2 class="section-title">磁盘详情</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">最新采集时间: <span id="disk-collection-time"></span></h5>
+            </div>
             <div class="disk-table">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -442,6 +445,9 @@
         <!-- 进程列表 -->
         <section class="mb-5">
             <h2 class="section-title">进程列表</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">最新采集时间: <span id="process-collection-time"></span></h5>
+            </div>
             <div class="process-table">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -470,261 +476,9 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.min.js') }}"></script>
     
-    <script>
-        // 存储历史数据用于图表显示
-        let memoryHistory = [];
-        let diskHistory = [];
-        let timeHistory = [];
-        
-        // 显示刷新指示器
-        function showRefreshIndicator() {
-            const indicator = document.getElementById('refresh-indicator');
-            indicator.style.display = 'block';
-            setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 1000);
-        }
-        
-        // 获取服务器IP地址
-        function getServerIP() {
-            fetch('/api/server-ip')
-                .then(response => response.json())
-                .then(data => {
-                    const ipElement = document.getElementById('server-ip');
-                    if (data.ip) {
-                        ipElement.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-server me-2" viewBox="0 0 16 16">
-                                <path d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4c0 1.473-2.985 2.667-6.667 2.667S1.333 5.473 1.333 4V2.667z"/>
-                                <path d="M1.333 6.334v3C1.333 10.805 4.318 12 8 12s6.667-1.194 6.667-2.667V6.334a6.51 6.51 0 0 1-1.458.79C11.81 7.684 9.967 8 8 8c-1.966 0-3.809-.317-5.208-.876a6.509 6.509 0 0 1-1.458-.79z"/>
-                                <path d="M14.667 11.668a6.51 6.51 0 0 1-1.458.789c-1.4.56-3.242.876-5.21.876-1.966 0-3.809-.316-5.208-.876a6.51 6.51 0 0 1-1.458-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
-                            </svg>
-                            服务器IP: ${data.ip}
-                        `;
-                    } else {
-                        ipElement.textContent = '无法获取服务器IP地址';
-                    }
-                })
-                .catch(error => {
-                    console.error('获取服务器IP失败:', error);
-                    document.getElementById('server-ip').textContent = '无法获取服务器IP地址';
-                });
-        }
-        
-        // 获取详细系统信息
-        function getDetailedSystemInfo() {
-            fetch('/api/detailed-system-info')
-                .then(response => response.json())
-                .then(data => {
-                    // 更新操作系统信息
-                    document.getElementById('os-info').textContent = `${data.system} ${data.release}`;
-                    document.getElementById('os-version').textContent = data.version;
-                    document.getElementById('hostname').textContent = data.node;
-                    document.getElementById('architecture').textContent = data.machine;
-                    document.getElementById('processor').textContent = data.processor || '未知';
-                    document.getElementById('python-version-detail').textContent = data.python_version;
-                    document.getElementById('cpu-cores').textContent = `${data.cpu_count_physical || '未知'} 物理核心, ${data.cpu_count_logical || '未知'} 逻辑核心`;
-                    document.getElementById('total-memory').textContent = formatBytes(data.memory.total);
-                    document.getElementById('boot-time').textContent = new Date(data.boot_time * 1000).toLocaleString();
-                    document.getElementById('kernel-version').textContent = data.version;
-                })
-                .catch(error => {
-                    console.error('获取详细系统信息失败:', error);
-                    // 设置默认值
-                    document.getElementById('os-info').textContent = '无法获取';
-                    document.getElementById('os-version').textContent = '无法获取';
-                    document.getElementById('hostname').textContent = '无法获取';
-                    document.getElementById('architecture').textContent = '无法获取';
-                    document.getElementById('processor').textContent = '无法获取';
-                    document.getElementById('python-version-detail').textContent = '无法获取';
-                    document.getElementById('cpu-cores').textContent = '无法获取';
-                    document.getElementById('total-memory').textContent = '无法获取';
-                    document.getElementById('boot-time').textContent = '无法获取';
-                    document.getElementById('kernel-version').textContent = '无法获取';
-                });
-        }
-        
-        // 更新系统信息
-        function updateSystemInfo() {
-            showRefreshIndicator();
-            fetch('/api/system-info')
-                .then(response => response.json())
-                .then(data => {
-                    // 更新CPU使用率
-                    const cpuPercent = data.system.cpu_percent;
-                    document.getElementById('cpu-percent').textContent = cpuPercent.toFixed(2) + '%';
-                    document.getElementById('cpu-progress').style.width = cpuPercent + '%';
-                    
-                    // 更新内存使用率
-                    const memoryPercent = data.system.memory_percent;
-                    document.getElementById('memory-percent').textContent = memoryPercent.toFixed(2) + '%';
-                    document.getElementById('memory-progress').style.width = memoryPercent + '%';
-                    const memoryCard = document.getElementById('memory-card');
-                    memoryCard.className = 'metric-card ' + 
-                        (memoryPercent > 80 ? 'critical' : memoryPercent > 60 ? 'warning' : 'normal');
-                    
-                    // 更新磁盘使用率
-                    let maxDiskPercent = 0;
-                    data.disks.forEach(disk => {
-                        if (disk.percent > maxDiskPercent) {
-                            maxDiskPercent = disk.percent;
-                        }
-                    });
-                    document.getElementById('disk-percent').textContent = maxDiskPercent.toFixed(2) + '%';
-                    document.getElementById('disk-progress').style.width = maxDiskPercent + '%';
-                    const diskCard = document.getElementById('disk-card');
-                    diskCard.className = 'metric-card ' + 
-                        (maxDiskPercent > 80 ? 'critical' : maxDiskPercent > 60 ? 'warning' : 'normal');
-                    
-                    // 更新应用程序版本
-                    document.getElementById('python-version').textContent = data.applications.python || '未安装';
-                    document.getElementById('java-version').textContent = data.applications.java || '未安装';
-                    document.getElementById('docker-version').textContent = data.applications.docker || '未安装';
-                    
-                    // 更新磁盘详情表格
-                    const diskTableBody = document.getElementById('disk-table-body');
-                    diskTableBody.innerHTML = '';
-                    data.disks.forEach(disk => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${disk.device}</td>
-                            <td>${disk.mountpoint}</td>
-                            <td>${formatBytes(disk.total)}</td>
-                            <td>${formatBytes(disk.used)}</td>
-                            <td>${formatBytes(disk.free)}</td>
-                            <td>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar ${disk.percent > 80 ? 'bg-danger' : disk.percent > 60 ? 'bg-warning' : 'bg-success'}" 
-                                         role="progressbar" style="width: ${disk.percent}%" aria-valuenow="${disk.percent}" 
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <small class="text-muted">${disk.percent.toFixed(2)}%</small>
-                            </td>
-                        `;
-                        diskTableBody.appendChild(row);
-                    });
-                    
-                    // 更新图表数据
-                    updateCharts(memoryPercent, maxDiskPercent);
-                })
-                .catch(error => {
-                    console.error('获取系统信息失败:', error);
-                });
-        }
-        
-        // 更新图表
-        function updateCharts(memoryPercent, diskPercent) {
-            // 获取当前时间
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            
-            // 更新历史数据
-            memoryHistory.push(memoryPercent);
-            diskHistory.push(diskPercent);
-            timeHistory.push(timeString);
-            
-            // 保持最多20个数据点
-            if (memoryHistory.length > 20) {
-                memoryHistory.shift();
-                diskHistory.shift();
-                timeHistory.shift();
-            }
-            
-            // 更新内存使用趋势图表
-            Plotly.newPlot('memory-chart', [{
-                x: timeHistory.slice(),  // 创建副本以避免引用问题
-                y: memoryHistory.slice(),  // 创建副本以避免引用问题
-                type: 'scatter',
-                mode: 'lines+markers',
-                line: {color: '#4361ee'},
-                marker: {size: 6}
-            }], {
-                title: '内存使用率趋势',
-                xaxis: {title: '时间'},
-                yaxis: {title: '使用率 (%)', range: [0, 100]},
-                margin: {t: 30, l: 50, r: 30, b: 50}
-            });
-            
-            // 更新磁盘使用趋势图表
-            Plotly.newPlot('disk-chart', [{
-                x: timeHistory.slice(),  // 创建副本以避免引用问题
-                y: diskHistory.slice(),  // 创建副本以避免引用问题
-                type: 'scatter',
-                mode: 'lines+markers',
-                line: {color: '#4cc9f0'},
-                marker: {size: 6}
-            }], {
-                title: '磁盘使用率趋势',
-                xaxis: {title: '时间'},
-                yaxis: {title: '使用率 (%)', range: [0, 100]},
-                margin: {t: 30, l: 50, r: 30, b: 50}
-            });
-        }
-        
-        // 更新进程列表
-        function updateProcessList() {
-            fetch('/api/processes')
-                .then(response => response.json())
-                .then(data => {
-                    const processTableBody = document.getElementById('process-table-body');
-                    processTableBody.innerHTML = '';
-                    
-                    // 按CPU使用率排序，取前20个进程
-                    const sortedProcesses = data.processes.sort((a, b) => b.cpu_percent - a.cpu_percent).slice(0, 20);
-                    
-                    sortedProcesses.forEach(proc => {
-                        // 确定状态样式
-                        let statusClass = 'status-running';
-                        if (proc.status === 'sleeping') {
-                            statusClass = 'status-sleeping';
-                        } else if (proc.status === 'stopped') {
-                            statusClass = 'status-stopped';
-                        }
-                        
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${proc.pid}</td>
-                            <td>${proc.name}</td>
-                            <td><span class="status-badge ${statusClass}">${proc.status}</span></td>
-                            <td>${proc.cpu_percent.toFixed(2)}</td>
-                            <td>${proc.memory_percent.toFixed(2)}</td>
-                        `;
-                        processTableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('获取进程列表失败:', error);
-                });
-        }
-        
-        // 格式化字节数
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-        
-        // 初始化页面
-        document.addEventListener('DOMContentLoaded', function() {
-            // 获取服务器IP地址
-            getServerIP();
-            
-            // 获取详细系统信息
-            getDetailedSystemInfo();
-            
-            // 初次加载数据
-            updateSystemInfo();
-            updateProcessList();
-            
-            // 每5秒自动刷新数据
-            setInterval(() => {
-                updateSystemInfo();
-                updateProcessList();
-            }, 5000);
-        });
-    </script>
+    <!-- 监控系统数据加载脚本 -->
+    <script src="{{ url_for('static', filename='monitoring.js') }}"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 # app/config.py
 import os
 from typing import Optional
-
+import tzlocal
 
 class Config:
     """应用配置类"""
@@ -14,13 +14,20 @@ class Config:
     if not os.path.exists(MONITORING_DIR):
         os.makedirs(MONITORING_DIR)
     
-    # 数据库配置
+    # 数据库配置 - 修改为新的db目录
+    DB_DIR = os.path.join(BASE_DIR, 'db')
+    if not os.path.exists(DB_DIR):
+        os.makedirs(DB_DIR)
+        
     SQLALCHEMY_DATABASE_URI: str = os.environ.get(
-        'DATABASE_URL') or f'sqlite:///{os.path.join(MONITORING_DIR, "monitoring.db")}'
+        'DATABASE_URL') or f'sqlite:///{os.path.join(DB_DIR, "monitoring.db")}'
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     
     # 定时任务配置
     SCHEDULER_API_ENABLED: bool = True
+    
+    # 时区配置
+    LOCAL_TIMEZONE: str = str(tzlocal.get_localzone())
     
     # 邮件配置
     MAIL_SERVER: Optional[str] = os.environ.get('MAIL_SERVER')

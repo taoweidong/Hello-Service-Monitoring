@@ -7,10 +7,18 @@
 
 import os
 import sys
+import time
 from loguru import logger
 from logging.handlers import RotatingFileHandler
 from app import create_app
 from app.monitoring.scheduler import MonitoringScheduler
+from app.config import Config
+from app.db_init import init_database
+
+# 设置环境变量以使用本地时区
+os.environ['TZ'] = Config.LOCAL_TIMEZONE
+if hasattr(time, 'tzset'):
+    time.tzset()
 
 # 配置loguru日志
 def setup_logging():
@@ -51,6 +59,14 @@ def create_app_instance():
 
 def main():
     """主函数"""
+    # 初始化数据库
+    try:
+        init_database()
+        logger.info("数据库初始化完成")
+    except Exception as e:
+        logger.error(f"数据库初始化失败: {e}")
+        return
+    
     # 创建应用实例
     app = create_app_instance()
     

@@ -9,6 +9,7 @@ from loguru import logger
 
 from .models import Base
 from .config import Config
+from .utils import get_current_local_time
 
 
 class DatabaseManager:
@@ -21,7 +22,6 @@ class DatabaseManager:
             
         self.engine = create_engine(database_url, echo=False)
         self.session_factory = scoped_session(sessionmaker(bind=self.engine))
-        Base.metadata.create_all(self.engine)
         self.logger = logger
     
     @contextmanager

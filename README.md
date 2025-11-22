@@ -1,14 +1,11 @@
-```markdown
-你是一名专业的Python工程师，请开发一个服务器监控系统，用于采集服务器关键指标，内存，硬盘空间，进程等信息。该系统需要支持以下功能：
+# 服务器监控系统
 
-1. 定时采集服务器关键指标（如内存使用率、硬盘空间、进程状态等信息）用于页面展示，使用`psutil`库进行采集。
-2. 实现资源预警机制：当内存或硬盘使用率超过80%时，每小时通过钉钉机器人发送一条预警消息。
-3. 每周自动生成一份服务器使用周报，内容包括服务器的基本信息、内存使用率曲线图、硬盘使用率曲线图以及对服务器风险的简要分析。报告将以邮件形式发送给指定的接收者。
-4. 开发一个基于Flask的Web页面，允许用户查询服务器的实时信息。页面上的数据每5秒自动刷新一次，展示的信息包括服务器的基本信息（如Python、Java、Docker版本，若无相关应用则显示"未安装"）、内存和硬盘使用状况、进程列表等，使用图表形式展示这些信息。
-5. 将所有采集的数据存储在本地的SQLite数据库中。
+## 项目简介
 
-注意事项：
-- 系统仅监控当前服务器的信息。
+服务器监控系统是一个用于实时监控服务器状态的工具，可以监控CPU、内存、磁盘、进程等资源使用情况，并提供预警机制。
+
+## 项目要求
+
 - 支持Linux和Windows操作系统下的监控，需提供一键启动服务脚本，该脚本应包括虚拟环境创建、依赖项安装、服务启动等功能，以简化部署过程。
 - 使用`uv`管理Python项目。
 - python使用面向对象的方式编写，注意一个类一个文件
@@ -27,96 +24,36 @@
 ## 项目结构
 
 ```
-Hello-Service-Monitoring/
-├── app/                    # 主应用目录
-│   ├── __init__.py         # 应用初始化
-│   ├── config.py           # 配置文件
-│   ├── models.py           # 数据模型
-│   ├── collector.py        # 数据采集器
-│   ├── database.py         # 数据库操作
-│   ├── routes.py           # 路由定义
-│   ├── api/                # API接口
-│   ├── services/           # 业务逻辑
-│   ├── templates/          # HTML模板
-│   └── static/             # 静态资源
-├── monitoring/             # 监控相关
-│   └── scheduler.py        # 定时任务调度器
-├── logs/                   # 日志目录
-├── app.py                  # 应用入口
-├── start.sh                # Linux启动脚本
-├── start.bat               # Windows启动脚本
-├── requirements.txt        # 依赖包列表
-├── pyproject.toml          # 项目配置文件
-└── README.md               # 项目说明文档
+.
+├── app/
+│   ├── monitoring/
+│   │   └── scheduler.py
+│   ├── templates/
+│   │   └── index.html
+│   ├── __init__.py
+│   ├── collector.py
+│   ├── config.py
+│   ├── database.py
+│   ├── models.py
+│   ├── routes.py
+│   ├── utils.py
+│   └── db_init.py
+├── db/
+│   └── monitoring.db
+├── static/bootstrap-5.3.0-alpha1-dist/
+│   ├── css/
+│   └── js/
+├── templates/
+│   └── index.html
+├── README.md
+├── app.py
+├── main.py
+├── pyproject.toml
+├── requirements.txt
+├── start.bat
+├── start.sh
+└── uv.lock
 ```
-
-## 快速开始
-
-### 环境要求
-- Python 3.10+
-- uv 包管理工具
-
-### 安装步骤
-
-1. 克隆项目代码：
-   ```bash
-   git clone <repository-url>
-   cd Hello-Service-Monitoring
-   ```
-
-2. 使用一键启动脚本：
-   - Linux/macOS系统：
-     ```bash
-     chmod +x start.sh
-     ./start.sh
-     ```
-   - Windows系统：
-     ```cmd
-     start.bat
-     ```
-
-### 手动安装
-
-1. 创建虚拟环境：
-   ```bash
-   python -m venv venv
-   ```
-
-2. 激活虚拟环境：
-   - Linux/macOS：
-     ```bash
-     source venv/bin/activate
-     ```
-   - Windows：
-     ```cmd
-     venv\Scripts\activate
-     ```
-
-3. 安装依赖：
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. 启动应用：
-   ```bash
-   python app.py
-   ```
-
-### 访问应用
-
-启动成功后，打开浏览器访问 `http://localhost:5000` 查看监控界面。
-
-## 配置说明
-
-系统支持通过环境变量进行配置：
-
-- `DATABASE_URL`: 数据库连接字符串，默认为 `sqlite:///../monitoring/monitoring.db`
-- `MEMORY_THRESHOLD`: 内存使用率预警阈值，默认为 80.0
-- `DISK_THRESHOLD`: 磁盘使用率预警阈值，默认为 80.0
-- `DINGTALK_WEBHOOK`: 钉钉机器人Webhook地址
-- `HOST`: 服务监听地址，默认为 0.0.0.0
-- `PORT`: 服务监听端口，默认为 5000
-- `DEBUG`: 是否开启调试模式，默认为 False
 
 ## 功能特性
 
@@ -125,4 +62,146 @@ Hello-Service-Monitoring/
 3. **预警机制**: 资源使用率超过阈值时发送钉钉通知
 4. **可视化展示**: 使用Bootstrap和Plotly展示数据图表
 5. **响应式设计**: 支持各种设备屏幕尺寸
+
+## 安装和部署
+
+### 使用uv安装（推荐）
+
+1. 安装uv包管理器：
+   ```bash
+   pip install uv
+   ```
+
+2. 克隆项目：
+   ```bash
+   git clone <项目地址>
+   cd Hello-Service-Monitoring
+   ```
+
+3. 安装依赖：
+   ```bash
+   uv sync
+   ```
+
+4. 初始化数据库：
+   ```bash
+   python init_db.py
+   ```
+
+5. 启动服务：
+   ```bash
+   python app.py
+   ```
+
+### 使用传统pip安装
+
+1. 克隆项目：
+   ```bash
+   git clone <项目地址>
+   cd Hello-Service-Monitoring
+   ```
+
+2. 创建虚拟环境：
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # 或
+   venv\Scripts\activate     # Windows
+   ```
+
+3. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. 初始化数据库：
+   ```bash
+   python init_db.py
+   ```
+
+5. 启动服务：
+   ```bash
+   python app.py
+   ```
+
+## 数据库管理
+
+本系统使用SQLite数据库存储监控数据，并通过Alembic进行数据库迁移管理。
+
+### 数据库位置
+
+数据库文件现在位于项目根目录下的 `db` 目录中：`db/monitoring.db`
+
+### 数据库特性
+
+- **数据持久化**: 服务重启不会丢失数据
+- **结构升级**: 数据库结构可以随着代码更新而自动升级
+- **向后兼容**: 新的数据库结构不会影响现有数据
+
+### 初始化数据库
+
+首次运行系统前需要初始化数据库：
+
+```bash
+python init_db.py
 ```
+
+### 数据库迁移
+
+当模型结构发生变化时，需要创建新的迁移脚本：
+
+```bash
+alembic revision --autogenerate -m "描述变更内容"
+alembic upgrade head
+```
+
+## 配置说明
+
+系统配置项位于 `app/config.py` 文件中，可以通过环境变量覆盖默认配置：
+
+- `DATABASE_URL`: 数据库连接URL
+- `HOST`: 服务监听地址
+- `PORT`: 服务监听端口
+- `DEBUG`: 是否启用调试模式
+- `DINGTALK_WEBHOOK`: 钉钉机器人Webhook地址
+- `MEMORY_THRESHOLD`: 内存使用率预警阈值
+- `DISK_THRESHOLD`: 磁盘使用率预警阈值
+
+## API接口
+
+- `/`: 主页
+- `/api/server-ip`: 获取服务器IP地址
+- `/api/system-info`: 获取系统信息
+- `/api/cpu-info`: 获取CPU信息
+- `/api/memory-info`: 获取内存信息
+- `/api/disk-info`: 获取磁盘信息
+- `/api/processes`: 获取进程信息
+- `/api/detailed-system-info`: 获取详细系统信息
+
+## 预警机制
+
+当系统资源使用率超过设定阈值时，会通过钉钉机器人发送预警消息。
+
+## 开发指南
+
+### 代码结构
+
+- `app/`: 主要应用代码
+- `app/collector.py`: 系统信息采集器
+- `app/database.py`: 数据库管理器
+- `app/models.py`: 数据库模型定义
+- `app/routes.py`: Web路由定义
+- `app/monitoring/scheduler.py`: 定时任务调度器
+- `templates/`: HTML模板文件
+
+### 添加新功能
+
+1. 在 `app/models.py` 中添加新的数据模型
+2. 在 `app/collector.py` 中添加数据采集方法
+3. 在 `app/database.py` 中添加数据保存方法
+4. 在 `app/routes.py` 中添加API接口
+5. 创建Alembic迁移脚本更新数据库结构
+
+## 贡献
+
+欢迎提交Issue和Pull Request来改进本项目。
