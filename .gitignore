@@ -199,6 +199,7 @@ htmlcov/
 
 # Local configuration files
 *.local
+.env
 *.env.local
 *.env.*.local
 

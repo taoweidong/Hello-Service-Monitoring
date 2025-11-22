@@ -14,11 +14,10 @@
             padding: 0;
         }
         .container {
-            max-width: 800px;
-            margin: 20px auto;
+            width: 100%;
+            max-width: none;
+            margin: 0;
             background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         .header {
@@ -49,6 +48,30 @@
             margin-bottom: 20px;
             font-size: 22px;
             font-weight: 600;
+        }
+        .server-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .server-detail-item {
+            flex: 1;
+            min-width: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .server-detail-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .server-detail-value {
+            font-size: 16px;
+            color: #212529;
         }
         .metrics {
             display: flex;
@@ -160,6 +183,36 @@
         
         <div class="content">
             <div class="section">
+                <h2 class="section-title">服务器详细信息</h2>
+                <div class="server-details">
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">主机名</div>
+                        <div class="server-detail-value">{{ server_info.node }}</div>
+                    </div>
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">操作系统</div>
+                        <div class="server-detail-value">{{ server_info.system }} {{ server_info.release }}</div>
+                    </div>
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">处理器</div>
+                        <div class="server-detail-value">{{ server_info.processor }}</div>
+                    </div>
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">CPU核心数</div>
+                        <div class="server-detail-value">{{ server_info.cpu_count_physical }} 物理核心, {{ server_info.cpu_count_logical }} 逻辑核心</div>
+                    </div>
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">总内存</div>
+                        <div class="server-detail-value">{{ "%.2f"|format(server_info.memory.total / (1024*1024*1024)) }} GB</div>
+                    </div>
+                    <div class="server-detail-item">
+                        <div class="server-detail-label">Python版本</div>
+                        <div class="server-detail-value">{{ server_info.python_version }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
                 <h2 class="section-title">系统概览</h2>
                 <div class="metrics">
                     <div class="metric-card">
@@ -171,7 +224,7 @@
                     </div>
                     <div class="metric-card">
                         <h3>平均内存使用率</h3>
-                        <div class="metric-value">{{ memory_avg }}%</div>
+                        <div class="metric-value">{{ "%.2f"|format(memory_avg) }}%</div>
                         <div class="metric-change {{ 'positive' if memory_change < 0 else 'negative' }}">
                             {{ memory_change }}% {{ '↓' if memory_change < 0 else '↑' }}
                         </div>
@@ -199,7 +252,7 @@
                 <div class="alert-section">
                     {% for alert in alerts %}
                     <div class="alert-item">
-                        <strong>{{ alert.timestamp.strftime('%Y-%m-%d %H:%M') }}</strong> - {{ alert.message }}
+                        <strong>{{ alert['timestamp'].strftime('%Y-%m-%d %H:%M') }}</strong> - {{ alert['message'] }}
                     </div>
                     {% endfor %}
                 </div>
@@ -219,9 +272,9 @@
                     <tbody>
                         {% for process in top_processes %}
                         <tr>
-                            <td class="process-name">{{ process.name }}</td>
-                            <td class="process-cpu">{{ process.cpu_percent }}%</td>
-                            <td class="process-mem">{{ process.memory_percent }}%</td>
+                            <td class="process-name">{{ process['name'] }}</td>
+                            <td class="process-cpu">{{ process['cpu_percent'] }}%</td>
+                            <td class="process-mem">{{ "%.2f"|format(process['memory_percent']) }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>

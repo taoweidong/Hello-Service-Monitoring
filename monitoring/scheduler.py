@@ -175,11 +175,15 @@ class MonitoringScheduler:
         from datetime import datetime, timedelta
         from sqlalchemy import desc, func
         from app.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
+        from app.collector import SystemCollector
         
         # 计算一周前的时间
         week_ago = datetime.now() - timedelta(days=7)
         
         try:
+            # 获取服务器详细信息
+            server_info = SystemCollector.get_detailed_system_info()
+            
             with self.db_manager.get_session() as session:
                 # 获取系统信息统计数据
                 cpu_avg = session.query(func.avg(SystemInfo.cpu_percent)).filter(
@@ -199,11 +203,35 @@ class MonitoringScheduler:
                 alerts = session.query(AlertRecord).filter(
                     AlertRecord.timestamp >= week_ago
                 ).order_by(desc(AlertRecord.timestamp)).all()
+                # 将AlertRecord对象转换为字典，避免Session关闭后访问对象属性的问题
+                alerts_data = [
+                    {
+                        'id': alert.id,
+                        'timestamp': alert.timestamp,
+                        'alert_type': alert.alert_type,
+                        'message': alert.message,
+                        'is_sent': alert.is_sent
+                    }
+                    for alert in alerts
+                ]
                 
                 # 获取高负载进程（按内存使用率排序，取前10）
                 top_processes = session.query(ProcessInfo).filter(
                     ProcessInfo.timestamp >= week_ago
                 ).order_by(desc(ProcessInfo.memory_percent)).limit(10).all()
+                # 将ProcessInfo对象转换为字典，避免Session关闭后访问对象属性的问题
+                top_processes_data = [
+                    {
+                        'id': process.id,
+                        'pid': process.pid,
+                        'name': process.name,
+                        'status': process.status,
+                        'cpu_percent': process.cpu_percent,
+                        'memory_percent': process.memory_percent,
+                        'create_time': process.create_time
+                    }
+                    for process in top_processes
+                ]
                 
                 # 计算变化趋势（与上周相比）
                 two_weeks_ago = datetime.now() - timedelta(days=14)
@@ -231,20 +259,22 @@ class MonitoringScheduler:
                 
                 return {
                     'report_date': datetime.now().strftime('%Y年%m月%d日'),
+                    'server_info': server_info,
                     'cpu_avg': round(cpu_avg, 2),
                     'memory_avg': round(memory_avg, 2),
                     'disk_max': round(disk_max, 2),
                     'cpu_change': cpu_change,
                     'memory_change': memory_change,
                     'disk_change': disk_change,
-                    'alerts': alerts,
-                    'top_processes': top_processes
+                    'alerts': alerts_data,
+                    'top_processes': top_processes_data
                 }
         except Exception as e:
             self.logger.error(f"获取周报数据时出错: {e}")
             # 返回默认数据
             return {
                 'report_date': datetime.now().strftime('%Y年%m月%d日'),
+                'server_info': {},
                 'cpu_avg': 0,
                 'memory_avg': 0,
                 'disk_max': 0,
