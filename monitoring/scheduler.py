@@ -177,6 +177,7 @@ class MonitoringScheduler:
         from app.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
         from app.collector import SystemCollector
         from app.config import Config
+        from app.routes import get_server_ip
         
         # 计算一周前的时间
         week_ago = datetime.now() - timedelta(days=7)
@@ -184,6 +185,9 @@ class MonitoringScheduler:
         try:
             # 获取服务器详细信息
             server_info = SystemCollector.get_detailed_system_info()
+            
+            # 获取服务器IP地址
+            server_ip = get_server_ip()
             
             with self.db_manager.get_session() as session:
                 # 获取系统信息统计数据
@@ -279,6 +283,7 @@ class MonitoringScheduler:
                 return {
                     'report_date': datetime.now().strftime('%Y年%m月%d日'),
                     'server_info': server_info,
+                    'server_ip': server_ip,
                     'cpu_avg': round(cpu_avg, 2),
                     'memory_avg': round(memory_avg, 2),
                     'disk_max': round(disk_max, 2),
@@ -294,6 +299,7 @@ class MonitoringScheduler:
             return {
                 'report_date': datetime.now().strftime('%Y年%m月%d日'),
                 'server_info': {},
+                'server_ip': 'unknown',
                 'cpu_avg': 0,
                 'memory_avg': 0,
                 'disk_max': 0,
@@ -397,7 +403,9 @@ class MonitoringScheduler:
             
             # 创建邮件
             msg = MIMEMultipart('related')
-            msg['Subject'] = f"服务器监控周报 - {weekly_data['report_date']}"
+            # 在邮件主题中添加服务器IP信息
+            server_ip = weekly_data.get('server_ip', 'unknown')
+            msg['Subject'] = f"服务器监控周报 ({server_ip}) - {weekly_data['report_date']}"
             msg['From'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
             msg['To'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
             
