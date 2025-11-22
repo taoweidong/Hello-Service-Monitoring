@@ -538,3 +538,40 @@ document.addEventListener('DOMContentLoaded', () => {
     
     dataLoader.getServerIP();
 });
+
+// 添加周报邮件发送按钮事件处理
+document.addEventListener('DOMContentLoaded', () => {
+    const sendReportButton = document.getElementById('send-weekly-report');
+    if (sendReportButton) {
+        sendReportButton.addEventListener('click', async () => {
+            // 显示加载状态
+            const originalText = sendReportButton.innerHTML;
+            sendReportButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 发送中...';
+            sendReportButton.disabled = true;
+            
+            try {
+                // 发送请求到后端API
+                const response = await fetch('/api/send-weekly-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('周报邮件发送成功！');
+                } else {
+                    const errorData = await response.json();
+                    alert(`发送失败: ${errorData.error || '未知错误'}`);
+                }
+            } catch (error) {
+                console.error('发送周报邮件时出错:', error);
+                alert('发送失败: 网络错误');
+            } finally {
+                // 恢复按钮状态
+                sendReportButton.innerHTML = originalText;
+                sendReportButton.disabled = false;
+            }
+        });
+    }
+});

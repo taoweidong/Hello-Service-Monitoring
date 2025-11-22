@@ -136,10 +136,240 @@ class MonitoringScheduler:
         """生成周报"""
         try:
             self.logger.info("开始生成周报")
-            # TODO: 实现周报生成功能
+            
             # 1. 从数据库获取一周的数据
+            weekly_data = self._get_weekly_data()
+            
             # 2. 生成图表
+            chart_path = self._generate_weekly_chart(weekly_data)
+            
             # 3. 发送邮件
+            self._send_weekly_report(weekly_data, chart_path)
+            
             self.logger.info("周报生成完成")
         except Exception as e:
             self.logger.error(f"生成周报时出错: {e}")
+    
+    def send_weekly_report_manual(self):
+        """手动发送周报（可从外部调用）"""
+        try:
+            self.logger.info("开始手动生成周报")
+            
+            # 1. 从数据库获取一周的数据
+            weekly_data = self._get_weekly_data()
+            
+            # 2. 生成图表
+            chart_path = self._generate_weekly_chart(weekly_data)
+            
+            # 3. 发送邮件
+            self._send_weekly_report(weekly_data, chart_path)
+            
+            self.logger.info("手动生成周报完成")
+            return True
+        except Exception as e:
+            self.logger.error(f"手动生成周报时出错: {e}")
+            return False
+
+    def _get_weekly_data(self):
+        """获取一周的数据"""
+        from datetime import datetime, timedelta
+        from sqlalchemy import desc, func
+        from app.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
+        
+        # 计算一周前的时间
+        week_ago = datetime.now() - timedelta(days=7)
+        
+        try:
+            with self.db_manager.get_session() as session:
+                # 获取系统信息统计数据
+                cpu_avg = session.query(func.avg(SystemInfo.cpu_percent)).filter(
+                    SystemInfo.timestamp >= week_ago
+                ).scalar() or 0
+                
+                memory_avg = session.query(func.avg(SystemInfo.memory_percent)).filter(
+                    SystemInfo.timestamp >= week_ago
+                ).scalar() or 0
+                
+                # 获取磁盘使用率最高值
+                disk_max = session.query(func.max(DiskInfo.percent)).filter(
+                    DiskInfo.timestamp >= week_ago
+                ).scalar() or 0
+                
+                # 获取本周预警记录
+                alerts = session.query(AlertRecord).filter(
+                    AlertRecord.timestamp >= week_ago
+                ).order_by(desc(AlertRecord.timestamp)).all()
+                
+                # 获取高负载进程（按内存使用率排序，取前10）
+                top_processes = session.query(ProcessInfo).filter(
+                    ProcessInfo.timestamp >= week_ago
+                ).order_by(desc(ProcessInfo.memory_percent)).limit(10).all()
+                
+                # 计算变化趋势（与上周相比）
+                two_weeks_ago = datetime.now() - timedelta(days=14)
+                
+                # 上周平均值
+                last_week_cpu_avg = session.query(func.avg(SystemInfo.cpu_percent)).filter(
+                    SystemInfo.timestamp >= two_weeks_ago,
+                    SystemInfo.timestamp < week_ago
+                ).scalar() or 0
+                
+                last_week_memory_avg = session.query(func.avg(SystemInfo.memory_percent)).filter(
+                    SystemInfo.timestamp >= two_weeks_ago,
+                    SystemInfo.timestamp < week_ago
+                ).scalar() or 0
+                
+                last_week_disk_max = session.query(func.max(DiskInfo.percent)).filter(
+                    DiskInfo.timestamp >= two_weeks_ago,
+                    DiskInfo.timestamp < week_ago
+                ).scalar() or 0
+                
+                # 计算变化值
+                cpu_change = round(cpu_avg - last_week_cpu_avg, 2)
+                memory_change = round(memory_avg - last_week_memory_avg, 2)
+                disk_change = round(disk_max - last_week_disk_max, 2)
+                
+                return {
+                    'report_date': datetime.now().strftime('%Y年%m月%d日'),
+                    'cpu_avg': round(cpu_avg, 2),
+                    'memory_avg': round(memory_avg, 2),
+                    'disk_max': round(disk_max, 2),
+                    'cpu_change': cpu_change,
+                    'memory_change': memory_change,
+                    'disk_change': disk_change,
+                    'alerts': alerts,
+                    'top_processes': top_processes
+                }
+        except Exception as e:
+            self.logger.error(f"获取周报数据时出错: {e}")
+            # 返回默认数据
+            return {
+                'report_date': datetime.now().strftime('%Y年%m月%d日'),
+                'cpu_avg': 0,
+                'memory_avg': 0,
+                'disk_max': 0,
+                'cpu_change': 0,
+                'memory_change': 0,
+                'disk_change': 0,
+                'alerts': [],
+                'top_processes': []
+            }
+
+    def _generate_weekly_chart(self, weekly_data):
+        """生成周报图表"""
+        try:
+            import matplotlib
+            matplotlib.use('Agg')  # 使用非交互式后端
+            import matplotlib.pyplot as plt
+            import numpy as np
+            from datetime import datetime, timedelta
+            from sqlalchemy import func
+            from app.models import SystemInfo
+            
+            # 设置中文字体
+            plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
+            plt.rcParams['axes.unicode_minus'] = False
+            
+            # 计算一周前的时间
+            week_ago = datetime.now() - timedelta(days=7)
+            
+            # 获取一周的历史数据
+            with self.db_manager.get_session() as session:
+                history_data = session.query(
+                    SystemInfo.timestamp,
+                    SystemInfo.cpu_percent,
+                    SystemInfo.memory_percent
+                ).filter(
+                    SystemInfo.timestamp >= week_ago
+                ).order_by(SystemInfo.timestamp).all()
+            
+            if not history_data:
+                # 如果没有数据，创建一个空图表
+                fig, ax = plt.subplots(figsize=(10, 6))
+                ax.text(0.5, 0.5, '暂无数据', ha='center', va='center', transform=ax.transAxes)
+                ax.set_title('资源使用趋势')
+            else:
+                # 提取数据
+                timestamps = [record.timestamp for record in history_data]
+                cpu_percents = [record.cpu_percent for record in history_data]
+                memory_percents = [record.memory_percent for record in history_data]
+                
+                # 创建图表
+                fig, ax = plt.subplots(figsize=(12, 6))
+                ax.plot(timestamps, cpu_percents, label='CPU使用率', linewidth=2, color='#4361ee')
+                ax.plot(timestamps, memory_percents, label='内存使用率', linewidth=2, color='#f72585')
+                
+                # 设置图表样式
+                ax.set_title('资源使用趋势 (过去7天)', fontsize=16, fontweight='bold')
+                ax.set_xlabel('时间', fontsize=12)
+                ax.set_ylabel('使用率 (%)', fontsize=12)
+                ax.legend()
+                ax.grid(True, alpha=0.3)
+                
+                # 格式化x轴日期
+                fig.autofmt_xdate()
+            
+            # 保存图表
+            import os
+            chart_dir = os.path.join(Config.BASE_DIR, 'temp')
+            if not os.path.exists(chart_dir):
+                os.makedirs(chart_dir)
+                
+            chart_path = os.path.join(chart_dir, 'weekly_trend_chart.png')
+            plt.tight_layout()
+            plt.savefig(chart_path, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            return chart_path
+        except Exception as e:
+            self.logger.error(f"生成周报图表时出错: {e}")
+            return None
+
+    def _send_weekly_report(self, weekly_data, chart_path):
+        """发送周报邮件"""
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        from email.mime.image import MIMEImage
+        from jinja2 import Environment, FileSystemLoader
+        import os
+        
+        # 检查邮件配置
+        if not Config.MAIL_SERVER or not Config.MAIL_USERNAME or not Config.MAIL_PASSWORD:
+            self.logger.warning("邮件配置不完整，无法发送周报")
+            return
+        
+        try:
+            # 渲染邮件模板
+            template_dir = os.path.join(Config.BASE_DIR, 'templates')
+            env = Environment(loader=FileSystemLoader(template_dir))
+            template = env.get_template('weekly_report.html')
+            html_content = template.render(**weekly_data)
+            
+            # 创建邮件
+            msg = MIMEMultipart('related')
+            msg['Subject'] = f"服务器监控周报 - {weekly_data['report_date']}"
+            msg['From'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
+            msg['To'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
+            
+            # 添加HTML内容
+            html_part = MIMEText(html_content, 'html', 'utf-8')
+            msg.attach(html_part)
+            
+            # 添加图表附件
+            if chart_path and os.path.exists(chart_path):
+                with open(chart_path, 'rb') as f:
+                    img = MIMEImage(f.read())
+                    img.add_header('Content-ID', '<resource_trend_chart>')
+                    msg.attach(img)
+            
+            # 发送邮件
+            server = smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT)
+            server.starttls()
+            server.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
+            server.send_message(msg)
+            server.quit()
+            
+            self.logger.info("周报邮件发送成功")
+        except Exception as e:
+            self.logger.error(f"发送周报邮件时出错: {e}")
