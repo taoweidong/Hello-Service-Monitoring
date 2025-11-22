@@ -5806,3 +5806,629 @@
 2025-11-22 21:14:56 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
 2025-11-22 21:14:56 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
 2025-11-22 21:14:56 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:14:58 | INFO | app.monitoring.scheduler:start:57 - 监控调度器已启动
+2025-11-22 21:15:02 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:15:02 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:15:02 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:15:03 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:15:03 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:15:03 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:15:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:15:13 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:15:13 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:15:13 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:15:13 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:15:13 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:15:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:15:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:15:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:15:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:15:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:15:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:15:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:15:31 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:15:31 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:15:31 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:15:31 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:15:31 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:15:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:15:41 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:15:42 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:15:42 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:15:42 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:15:42 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:15:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:15:52 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:15:52 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:15:52 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:15:52 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:15:52 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:15:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:15:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:15:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:01 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:01 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:01 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:01 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:01 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:11 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:11 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:11 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:11 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:11 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:21 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:21 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:21 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:21 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:21 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:31 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:31 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:31 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:31 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:31 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:41 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:42 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:42 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:42 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:42 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:16:52 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:16:52 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:16:52 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:16:52 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:16:52 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:16:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:16:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:16:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:02 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:02 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:02 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:02 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:02 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:17:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:17:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:12 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:12 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:12 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:12 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:12 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:17:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:17:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:21 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:21 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:21 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:22 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:22 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:17:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:17:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:32 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:32 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:32 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:32 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:32 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:17:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:17:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:42 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:42 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:42 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:42 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:42 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:17:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:17:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:17:51 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:17:51 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:17:51 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:17:51 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:17:51 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:17:52 | INFO | app.monitoring.scheduler:shutdown:62 - 监控调度器已关闭
+2025-11-22 21:17:54 | INFO | app.monitoring.scheduler:start:57 - 监控调度器已启动
+2025-11-22 21:17:58 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:17:58 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:17:58 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:18:00 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:18:00 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:18:00 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:18:04 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:18:05 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:18:05 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:18:07 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:18:07 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:18:07 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:18:07 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:18:07 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:18:14 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:18:15 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:18:15 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:18:19 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:18:19 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:18:19 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:18:19 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:18:19 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:18:24 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:18:25 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:18:25 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:18:28 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:18:28 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:18:28 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:18:28 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:18:28 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:18:34 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:18:35 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:18:35 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:18:37 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:18:37 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:18:37 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:18:37 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:18:37 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:18:44 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:18:45 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:18:45 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:18:47 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:18:47 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:18:47 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:18:47 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:18:47 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:18:50 | INFO | app.monitoring.scheduler:start:57 - 监控调度器已启动
+2025-11-22 21:18:55 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:18:55 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:18:55 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:19:00 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:01 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:01 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:04 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:04 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:05 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:05 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:05 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:19:10 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:11 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:11 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:13 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:13 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:13 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:13 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:13 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:19:20 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:21 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:21 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:19:30 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:31 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:31 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:35 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:35 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:35 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:35 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:35 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:19:40 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:41 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:41 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:45 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:45 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:45 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:45 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:45 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:19:50 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:19:51 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:19:51 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:19:53 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:19:53 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:19:53 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:19:53 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:19:53 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:00 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:01 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:01 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:03 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:03 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:03 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:03 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:03 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:10 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:11 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:11 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:13 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:13 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:13 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:13 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:13 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:20 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:21 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:21 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:30 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:31 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:31 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:33 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:34 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:34 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:34 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:34 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:40 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:41 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:41 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:43 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:43 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:43 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:43 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:43 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:20:50 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:20:51 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:20:51 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:20:53 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:20:53 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:20:53 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:20:53 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:20:53 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:00 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:01 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:01 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:21:04 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:21:04 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:21:04 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:21:04 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:21:04 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:06 | INFO | app.monitoring.scheduler:shutdown:62 - 监控调度器已关闭
+2025-11-22 21:21:08 | INFO | app.monitoring.scheduler:start:57 - 监控调度器已启动
+2025-11-22 21:21:13 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:21:14 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:21:14 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:21:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:21:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:21:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:21:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:21:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:21:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:21:33 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:21:33 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:21:33 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:21:33 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:21:33 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:34 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:21:35 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:21:35 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:21:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:21:43 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:21:43 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:21:43 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:21:43 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:21:43 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:21:53 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:21:53 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:21:53 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:21:53 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:21:53 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:21:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:21:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:21:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:04 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:04 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:04 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:04 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:04 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:14 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:14 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:14 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:14 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:14 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:25 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:22:25 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:22:25 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:22:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:34 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:34 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:34 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:34 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:34 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:43 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:43 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:43 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:43 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:43 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:22:54 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:22:54 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:22:54 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:22:54 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:22:54 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:22:55 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:22:55 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:22:55 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:22:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:22:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:22:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:04 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:04 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:04 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:04 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:04 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:13 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:13 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:13 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:13 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:13 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:23 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:23 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:23 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:23 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:23 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:32 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:32 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:32 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:32 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:32 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:42 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:42 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:42 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:42 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:42 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:23:52 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:23:52 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:23:52 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:23:52 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:23:52 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:23:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:23:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:23:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:02 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:02 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:02 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:02 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:02 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:08 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:09 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:09 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:12 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:12 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:12 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:12 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:12 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:18 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:19 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:19 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:22 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:22 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:22 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:22 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:22 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:28 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:29 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:29 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:32 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:32 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:32 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:32 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:32 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:38 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:39 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:39 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:42 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:42 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:42 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:42 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:42 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:48 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:49 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:49 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:24:52 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:24:52 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:24:52 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:24:52 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:24:52 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:24:58 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:24:59 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:24:59 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:25:02 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:25:02 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:25:02 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:25:02 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:25:02 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:25:04 | INFO | app.monitoring.scheduler:start:57 - 监控调度器已启动
+2025-11-22 21:25:14 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:25:15 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:25:15 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:25:20 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:25:20 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:25:21 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:25:21 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:25:21 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:25:21 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:25:21 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:25:21 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:25:22 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:25:22 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:25:24 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:25:25 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:25:25 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:25:30 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:25:30 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:25:30 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:25:30 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:25:30 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:25:34 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:25:35 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:25:35 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:25:40 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:25:40 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:25:40 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:25:40 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:25:40 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:25:44 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:25:45 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:25:45 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:25:49 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:25:50 | INFO | app.collector:get_detailed_system_info:238 - 详细系统信息采集成功
+2025-11-22 21:25:50 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:25:50 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:25:50 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:25:50 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:25:50 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:25:50 | INFO | app.collector:get_application_versions:145 - 应用程序版本信息采集成功
+2025-11-22 21:25:54 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:25:55 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:25:55 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:00 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:00 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:00 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:00 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:00 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:04 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:05 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:05 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:08 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:08 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:08 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:08 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:08 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:14 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:15 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:15 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:18 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:18 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:18 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:18 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:18 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:24 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:25 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:25 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:28 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:28 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:28 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:28 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:28 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:34 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:35 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:35 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:38 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:38 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:38 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:38 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:38 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:44 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:45 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:45 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:48 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:48 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:48 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:48 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:48 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:26:54 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:26:55 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:26:55 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:26:58 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:26:58 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:26:58 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:26:58 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:26:58 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:27:04 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:27:05 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:27:05 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:27:08 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:27:08 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:27:08 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:27:08 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:27:08 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:27:14 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:27:15 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:27:15 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:27:18 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:27:18 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:27:18 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:27:18 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:27:18 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:27:24 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:27:25 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:27:25 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:27:28 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:27:28 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:27:28 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:27:28 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:27:28 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成
+2025-11-22 21:27:34 | INFO | app.monitoring.scheduler:collect_system_data:67 - 开始收集系统数据
+2025-11-22 21:27:35 | INFO | app.collector:get_system_info:40 - 系统基本信息采集成功
+2025-11-22 21:27:35 | INFO | app.collector:get_disk_info:80 - 磁盘信息采集成功，共采集 3 个分区
+2025-11-22 21:27:38 | INFO | app.collector:get_process_info:111 - 进程信息采集成功，共采集 20 个进程
+2025-11-22 21:27:38 | INFO | app.database:save_system_info:53 - 系统信息保存成功
+2025-11-22 21:27:38 | INFO | app.database:save_disk_info:91 - 磁盘信息保存成功，共保存 3 个磁盘分区
+2025-11-22 21:27:38 | INFO | app.database:save_process_info:72 - 进程信息保存成功，共保存 20 个进程
+2025-11-22 21:27:38 | INFO | app.monitoring.scheduler:collect_system_data:83 - 系统数据收集完成

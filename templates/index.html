@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>服务器监控系统</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- Bootstrap CSS -->
     <link href="{{ url_for('static', filename='bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css') }}" rel="stylesheet">
-    <!-- Plotly JS -->
-    <script src="{{ url_for('static', filename='plotly.min.js') }}"></script>
+    <!-- Plotly JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.24.1/plotly.min.js"></script>
     <style>
         :root {
             --primary-color: #4361ee;
@@ -298,50 +300,68 @@
             <div class="system-info-card card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">操作系统</div>
                                 <div class="system-info-value" id="os-info">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">系统版本</div>
                                 <div class="system-info-value" id="os-version">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">主机名</div>
                                 <div class="system-info-value" id="hostname">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">架构</div>
                                 <div class="system-info-value" id="architecture">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">处理器</div>
                                 <div class="system-info-value" id="processor">加载中...</div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">Python版本</div>
                                 <div class="system-info-value" id="python-version-detail">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">CPU核心数</div>
                                 <div class="system-info-value" id="cpu-cores">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">总内存</div>
                                 <div class="system-info-value" id="total-memory">加载中...</div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">启动时间</div>
                                 <div class="system-info-value" id="boot-time">加载中...</div>
                             </div>
+                        </div>
+                        <divGET http://192.168.0.105:5000/favicon.ico 404 (NOT FOUND)class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
                                 <div class="system-info-label">内核版本</div>
                                 <div class="system-info-value" id="kernel-version">加载中...</div>
                             </div>
-                        </div>
+                        </divGET>
                     </div>
                 </div>
             </div>

@@ -332,7 +332,10 @@ class MonitoringDataLoader {
         // 绘制图表
         const chartElement = document.getElementById('memory-chart');
         if (chartElement) {
-            Plotly.newPlot('memory-chart', chartData, layout);
+            // 确保Plotly已经加载
+            if (typeof Plotly !== 'undefined') {
+                Plotly.newPlot('memory-chart', chartData, layout);
+            }
         }
     }
     
@@ -373,7 +376,10 @@ class MonitoringDataLoader {
         // 绘制图表
         const chartElement = document.getElementById('disk-chart');
         if (chartElement) {
-            Plotly.newPlot('disk-chart', chartData, layout);
+            // 确保Plotly已经加载
+            if (typeof Plotly !== 'undefined') {
+                Plotly.newPlot('disk-chart', chartData, layout);
+            }
         }
     }
     
@@ -514,5 +520,21 @@ const dataLoader = new MonitoringDataLoader();
 
 // 页面加载时获取服务器IP
 document.addEventListener('DOMContentLoaded', () => {
+    // 检查Plotly是否成功加载
+    if (typeof Plotly === 'undefined') {
+        console.warn('Plotly未能成功加载，图表功能将不可用');
+        // 在图表容器中显示提示信息
+        const memoryChartElement = document.getElementById('memory-chart');
+        const diskChartElement = document.getElementById('disk-chart');
+        
+        if (memoryChartElement) {
+            memoryChartElement.innerHTML = '<div class="alert alert-warning">图表库加载失败，无法显示图表</div>';
+        }
+        
+        if (diskChartElement) {
+            diskChartElement.innerHTML = '<div class="alert alert-warning">图表库加载失败，无法显示图表</div>';
+        }
+    }
+    
     dataLoader.getServerIP();
 });

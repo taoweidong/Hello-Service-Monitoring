@@ -1,5 +1,6 @@
 # app/routes.py
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, send_from_directory
+import os
 from .database import DatabaseManager
 from .config import Config
 from sqlalchemy import desc
@@ -10,6 +11,22 @@ from .utils import format_local_time
 
 main_bp = Blueprint('main', __name__)
 db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
+
+
+@main_bp.route('/favicon.ico')
+def favicon():
+    """Favicon路由"""
+    # 获取项目根目录
+    base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    static_dir = os.path.join(base_dir, 'static')
+    
+    # 检查favicon文件是否存在
+    favicon_path = os.path.join(static_dir, 'favicon.ico')
+    if os.path.exists(favicon_path):
+        return send_from_directory(static_dir, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    else:
+        # 如果favicon不存在，返回空响应
+        return '', 204
 
 
 def get_server_ip():
