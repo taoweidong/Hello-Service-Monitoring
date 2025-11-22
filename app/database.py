@@ -1,0 +1,90 @@
+# app/database.py
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
+from contextlib import contextmanager
+from typing import Generator, Optional
+import os
+
+from .models import Base
+from .config import Config
+
+
+class DatabaseManager:
+    """数据库管理器"""
+    
+    def __init__(self, database_url: str = None):
+        """初始化数据库连接"""
+        if database_url is None:
+            database_url = Config.SQLALCHEMY_DATABASE_URI
+            
+        self.engine = create_engine(database_url, echo=False)
+        self.session_factory = scoped_session(sessionmaker(bind=self.engine))
+        Base.metadata.create_all(self.engine)
+    
+    @contextmanager
+    def get_session(self) -> Generator:
+        """获取数据库会话的上下文管理器"""
+        session = self.session_factory()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+    
+    def save_system_info(self, system_info: dict):
+        """保存系统信息"""
+        from .models import SystemInfo
+        with self.get_session() as session:
+            system_record = SystemInfo(
+                cpu_percent=system_info.get('cpu_percent'),
+                memory_percent=system_info.get('memory_percent'),
+                disk_percent=system_info.get('disk_percent', 0),
+                uptime=system_info.get('boot_time'),
+                load_average=str(system_info.get('load_average'))
+            )
+            session.add(system_record)
+    
+    def save_process_info(self, processes: list):
+        """保存进程信息"""
+        from .models import ProcessInfo
+        with self.get_session() as session:
+            for proc in processes:
+                process_record = ProcessInfo(
+                    pid=proc.get('pid'),
+                    name=proc.get('name'),
+                    status=proc.get('status'),
+                    cpu_percent=proc.get('cpu_percent'),
+                    memory_percent=proc.get('memory_percent'),
+                    create_time=proc.get('create_time')
+                )
+                session.add(process_record)
+    
+    def save_disk_info(self, disks: list):
+        """保存磁盘信息"""
+        from .models import DiskInfo
+        with self.get_session() as session:
+            for disk in disks:
+                disk_record = DiskInfo(
+                    device=disk.get('device'),
+                    mountpoint=disk.get('mountpoint'),
+                    total=disk.get('total'),
+                    used=disk.get('used'),
+                    free=disk.get('free'),
+                    percent=disk.get('percent')
+                )
+                session.add(disk_record)
+    
+    def save_alert_record(self, alert_type: str, message: str, is_sent: int = 0):
+        """保存预警记录"""
+        from .models import AlertRecord
+        with self.get_session() as session:
+            alert_record = AlertRecord(
+                alert_type=alert_type,
+                message=message,
+                is_sent=is_sent
+            )
+            session.add(alert_record)

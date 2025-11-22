@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务器监控系统</title>
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Plotly JS -->
+    <script src="{{ url_for('static', filename='plotly.min.js') }}"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --danger-color: #e63946;
+            --dark-color: #1d3557;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: none;
+            margin-bottom: 1.5rem;
+            background: white;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .metric-card.critical {
+            border-left: 5px solid var(--danger-color);
+        }
+        
+        .metric-card.warning {
+            border-left: 5px solid var(--warning-color);
+        }
+        
+        .metric-card.normal {
+            border-left: 5px solid var(--success-color);
+        }
+        
+        .metric-card .card-title {
+            font-weight: 600;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+        
+        .metric-card .card-text {
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .section-title {
+            color: var(--dark-color);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+        
+        .app-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: none;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .app-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .app-card .card-text {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        
+        .chart-container {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: none;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+        }
+        
+        .disk-table, .process-table {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .status-badge {
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .status-running {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+        
+        .status-sleeping {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary-color);
+        }
+        
+        .status-stopped {
+            background-color: rgba(230, 57, 70, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(67, 97, 238, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .server-ip {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+            border-radius: 20px 20px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="refresh-indicator" id="refresh-indicator">
+        <span class="loading-spinner"></span> 数据更新中...
+    </div>
+    
+    <div class="header">
+        <div class="container">
+            <h1 class="text-center mb-3">服务器监控系统</h1>
+            <p class="text-center text-white-50 mb-0">实时监控服务器状态与资源使用情况</p>
+            <div class="text-center">
+                <div class="server-ip" id="server-ip">
+                    <span class="loading-spinner"></span> 获取服务器IP地址中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 系统概览 -->
+        <section class="mb-5">
+            <h2 class="section-title">系统概览</h2>
+            <div class="row" id="system-overview">
+                <div class="col-lg-4 col-md-6">
+                    <div class="metric-card normal">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">CPU使用率</h5>
+                            <h3 class="card-text" id="cpu-percent">--%</h3>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" id="cpu-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="metric-card normal" id="memory-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">内存使用率</h5>
+                            <h3 class="card-text" id="memory-percent">--%</h3>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 0%" id="memory-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="metric-card normal" id="disk-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">磁盘使用率</h5>
+                            <h3 class="card-text" id="disk-percent">--%</h3>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%" id="disk-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 应用程序版本 -->
+        <section class="mb-5">
+            <h2 class="section-title">应用程序版本</h2>
+            <div class="row" id="app-versions">
+                <div class="col-md-4">
+                    <div class="app-card card">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-code-slash text-primary" viewBox="0 0 16 16">
+                                    <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+                                </svg>
+                            </div>
+                            <h5 class="card-title">Python</h5>
+                            <p class="card-text" id="python-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="app-card card">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cup-hot-fill text-warning" viewBox="0 0 16 16">
+                                    <path d="M.5 10a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H.5Z"/>
+                                    <path d="M4 11.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5v1Zm0 2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5v1Z"/>
+                                    <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v2A1.5 1.5 0 0 0 1.5 5h2A1.5 1.5 0 0 0 5 3.5V2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1v.5A2.5 2.5 0 0 1 10 8H6a2.5 2.5 0 0 1-2.5-2.5V5h-1A1.5 1.5 0 0 0 1.5 6.5v-5ZM3 5h1v.5A1.5 1.5 0 0 0 5.5 7h5A1.5 1.5 0 0 0 12 5.5V5h1v.5a1.5 1.5 0 0 1-1.5 1.5H11a.5.5 0 0 1-.5-.5V6H5v.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V5H3Z"/>
+                                </svg>
+                            </div>
+                            <h5 class="card-title">Java</h5>
+                            <p class="card-text" id="java-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="app-card card">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-boxes text-info" viewBox="0 0 16 16">
+                                    <path d="M.5 1A.5.5 0 0 0 0 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 1.5 1H.5zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 3.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 5.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 7.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5A.5.5 0 0 0 9.5 1h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-1zm2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-1z"/>
+                                    <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5v7a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5v-7zM1.5 4a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-13zM1 7.5v3a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-3H1z"/>
+                                </svg>
+                            </div>
+                            <h5 class="card-title">Docker</h5>
+                            <p class="card-text" id="docker-version">未安装</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图表区域 -->
+        <section class="mb-5">
+            <h2 class="section-title">资源使用趋势</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">内存使用趋势</h5>
+                        <div id="memory-chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">磁盘使用趋势</h5>
+                        <div id="disk-chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 磁盘详情 -->
+        <section class="mb-5">
+            <h2 class="section-title">磁盘详情</h2>
+            <div class="disk-table">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>设备</th>
+                                <th>挂载点</th>
+                                <th>总容量</th>
+                                <th>已使用</th>
+                                <th>可用空间</th>
+                                <th>使用率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disk-table-body">
+                            <!-- 动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 进程列表 -->
+        <section class="mb-5">
+            <h2 class="section-title">进程列表</h2>
+            <div class="process-table">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>名称</th>
+                                <th>状态</th>
+                                <th>CPU%</th>
+                                <th>内存%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="process-table-body">
+                            <!-- 动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="mt-5">
+        <div class="container text-center">
+            <p class="mb-0">© 2025 服务器监控系统 - 实时监控您的服务器状态</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+    
+    <script>
+        // 显示刷新指示器
+        function showRefreshIndicator() {
+            const indicator = document.getElementById('refresh-indicator');
+            indicator.style.display = 'block';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 1000);
+        }
+        
+        // 获取服务器IP地址
+        function getServerIP() {
+            fetch('/api/server-ip')
+                .then(response => response.json())
+                .then(data => {
+                    const ipElement = document.getElementById('server-ip');
+                    if (data.ip) {
+                        ipElement.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-server me-2" viewBox="0 0 16 16">
+                                <path d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4c0 1.473-2.985 2.667-6.667 2.667S1.333 5.473 1.333 4V2.667z"/>
+                                <path d="M1.333 6.334v3C1.333 10.805 4.318 12 8 12s6.667-1.194 6.667-2.667V6.334a6.51 6.51 0 0 1-1.458.79C11.81 7.684 9.967 8 8 8c-1.966 0-3.809-.317-5.208-.876a6.509 6.509 0 0 1-1.458-.79z"/>
+                                <path d="M14.667 11.668a6.51 6.51 0 0 1-1.458.789c-1.4.56-3.242.876-5.21.876-1.966 0-3.809-.316-5.208-.876a6.51 6.51 0 0 1-1.458-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
+                            </svg>
+                            服务器IP: ${data.ip}
+                        `;
+                    } else {
+                        ipElement.textContent = '无法获取服务器IP地址';
+                    }
+                })
+                .catch(error => {
+                    console.error('获取服务器IP失败:', error);
+                    document.getElementById('server-ip').textContent = '无法获取服务器IP地址';
+                });
+        }
+        
+        // 更新系统信息
+        function updateSystemInfo() {
+            showRefreshIndicator();
+            fetch('/api/system-info')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新CPU使用率
+                    const cpuPercent = data.system.cpu_percent;
+                    document.getElementById('cpu-percent').textContent = cpuPercent.toFixed(2) + '%';
+                    document.getElementById('cpu-progress').style.width = cpuPercent + '%';
+                    
+                    // 更新内存使用率
+                    const memoryPercent = data.system.memory_percent;
+                    document.getElementById('memory-percent').textContent = memoryPercent.toFixed(2) + '%';
+                    document.getElementById('memory-progress').style.width = memoryPercent + '%';
+                    const memoryCard = document.getElementById('memory-card');
+                    memoryCard.className = 'metric-card ' + 
+                        (memoryPercent > 80 ? 'critical' : memoryPercent > 60 ? 'warning' : 'normal');
+                    
+                    // 更新磁盘使用率
+                    let maxDiskPercent = 0;
+                    data.disks.forEach(disk => {
+                        if (disk.percent > maxDiskPercent) {
+                            maxDiskPercent = disk.percent;
+                        }
+                    });
+                    document.getElementById('disk-percent').textContent = maxDiskPercent.toFixed(2) + '%';
+                    document.getElementById('disk-progress').style.width = maxDiskPercent + '%';
+                    const diskCard = document.getElementById('disk-card');
+                    diskCard.className = 'metric-card ' + 
+                        (maxDiskPercent > 80 ? 'critical' : maxDiskPercent > 60 ? 'warning' : 'normal');
+                    
+                    // 更新应用程序版本
+                    document.getElementById('python-version').textContent = data.applications.python || '未安装';
+                    document.getElementById('java-version').textContent = data.applications.java || '未安装';
+                    document.getElementById('docker-version').textContent = data.applications.docker || '未安装';
+                    
+                    // 更新磁盘详情表格
+                    const diskTableBody = document.getElementById('disk-table-body');
+                    diskTableBody.innerHTML = '';
+                    data.disks.forEach(disk => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${disk.device}</td>
+                            <td>${disk.mountpoint}</td>
+                            <td>${formatBytes(disk.total)}</td>
+                            <td>${formatBytes(disk.used)}</td>
+                            <td>${formatBytes(disk.free)}</td>
+                            <td>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar ${disk.percent > 80 ? 'bg-danger' : disk.percent > 60 ? 'bg-warning' : 'bg-success'}" 
+                                         role="progressbar" style="width: ${disk.percent}%" aria-valuenow="${disk.percent}" 
+                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted">${disk.percent.toFixed(2)}%</small>
+                            </td>
+                        `;
+                        diskTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取系统信息失败:', error);
+                });
+        }
+        
+        // 更新进程列表
+        function updateProcessList() {
+            fetch('/api/processes')
+                .then(response => response.json())
+                .then(data => {
+                    const processTableBody = document.getElementById('process-table-body');
+                    processTableBody.innerHTML = '';
+                    
+                    // 按CPU使用率排序，取前20个进程
+                    const sortedProcesses = data.processes.sort((a, b) => b.cpu_percent - a.cpu_percent).slice(0, 20);
+                    
+                    sortedProcesses.forEach(proc => {
+                        // 确定状态样式
+                        let statusClass = 'status-running';
+                        if (proc.status === 'sleeping') {
+                            statusClass = 'status-sleeping';
+                        } else if (proc.status === 'stopped') {
+                            statusClass = 'status-stopped';
+                        }
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${proc.pid}</td>
+                            <td>${proc.name}</td>
+                            <td><span class="status-badge ${statusClass}">${proc.status}</span></td>
+                            <td>${proc.cpu_percent.toFixed(2)}</td>
+                            <td>${proc.memory_percent.toFixed(2)}</td>
+                        `;
+                        processTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取进程列表失败:', error);
+                });
+        }
+        
+        // 格式化字节数
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取服务器IP地址
+            getServerIP();
+            
+            // 初次加载数据
+            updateSystemInfo();
+            updateProcessList();
+            
+            // 每5秒自动刷新数据
+            setInterval(() => {
+                updateSystemInfo();
+                updateProcessList();
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

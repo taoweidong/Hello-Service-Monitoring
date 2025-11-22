@@ -1,161 +1,128 @@
-# 服务器监控系统
+```markdown
+你是一名专业的Python工程师，请开发一个服务器监控系统，用于采集服务器关键指标，内存，硬盘空间，进程等信息。该系统需要支持以下功能：
 
-一个基于Python的服务器监控系统，支持Web访问、定时数据采集、数据趋势展示和资源不足预警等功能。
+1. 定时采集服务器关键指标（如内存使用率、硬盘空间、进程状态等信息）用于页面展示，使用`psutil`库进行采集。
+2. 实现资源预警机制：当内存或硬盘使用率超过80%时，每小时通过钉钉机器人发送一条预警消息。
+3. 每周自动生成一份服务器使用周报，内容包括服务器的基本信息、内存使用率曲线图、硬盘使用率曲线图以及对服务器风险的简要分析。报告将以邮件形式发送给指定的接收者。
+4. 开发一个基于Flask的Web页面，允许用户查询服务器的实时信息。页面上的数据每5秒自动刷新一次，展示的信息包括服务器的基本信息（如Python、Java、Docker版本，若无相关应用则显示"未安装"）、内存和硬盘使用状况、进程列表等，使用图表形式展示这些信息。
+5. 将所有采集的数据存储在本地的SQLite数据库中。
 
-## 功能特性
+注意事项：
+- 系统仅监控当前服务器的信息。
+- 支持Linux和Windows操作系统下的监控，需提供一键启动服务脚本，该脚本应包括虚拟环境创建、依赖项安装、服务启动等功能，以简化部署过程。
+- 使用`uv`管理Python项目。
+- python使用面向对象的方式编写，注意一个类一个文件
 
-- **实时监控**: 监控CPU、内存、磁盘和进程等系统资源
-- **Web界面**: 基于Flask的Web界面，支持响应式设计
-- **数据可视化**: 使用Chart.js展示数据趋势图
-- **定时采集**: 使用APScheduler定时采集数据（默认每2分钟）
-- **预警机制**: 资源使用超过阈值时触发预警并通过邮件通知
-- **周报功能**: 每周自动生成服务器资源使用报告并通过邮件发送
-- **数据存储**: 使用SQLite数据库存储历史数据
-- **多服务器支持**: 支持监控多台服务器（通过IP地址区分）
-
-## 技术栈
-
-- **后端**: Python, Flask, SQLAlchemy, APScheduler, psutil
-- **前端**: Bootstrap, Chart.js
-- **数据库**: MySQL (默认) 或 SQLite
-- **其他**: loguru（日志记录）, python-dotenv（配置管理）
-
-## 安装和配置
-
-### 1. 克隆项目
-
-```bash
-git clone <repository-url>
-cd Hello-Service-Monitoring
-```
-
-### 2. 安装依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. 配置环境变量
-
-编辑 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件，根据需要修改配置：
-
-```env
-# 数据库配置 (MySQL)
-DATABASE_URL=mysql+pymysql://root:root@127.0.0.1/monitoring
-
-# 定时任务配置
-SCHEDULE_INTERVAL_MINUTES=2
-
-# 预警阈值配置
-CPU_THRESHOLD=80
-MEMORY_THRESHOLD=80
-DISK_THRESHOLD=80
-
-# 邮件配置（用于预警）
-MAIL_SERVER=smtp.example.com
-MAIL_PORT=587
-MAIL_USERNAME=546642132@qq.com
-MAIL_PASSWORD=luspyjrneugabgaj
-MAIL_DEFAULT_SENDER=546642132@qq.com
-ADMIN_EMAIL=546642132@qq.com
-
-# 初始管理员账号配置
-INITIAL_ADMIN_USERNAME=admin
-INITIAL_ADMIN_PASSWORD=admin123
-INITIAL_ADMIN_EMAIL=admin@example.com
-```
-
-> 注意：如果要使用SQLite数据库，请将DATABASE_URL修改为：`DATABASE_URL=sqlite:///db/monitoring.db`
-
-### 4. 创建必要的目录
-
-```bash
-mkdir logs db
-```
-
-## 运行系统
-
-```bash
-python run.py
-```
-
-系统将在 `http://localhost:5000` 启动。
-
-## 使用说明
-
-1. **首页**: 显示所有被监控的服务器列表
-2. **服务器详情页**: 显示特定服务器的详细监控信息和趋势图
-3. **数据采集**: 系统会自动每2分钟采集一次数据
-4. **预警**: 当资源使用超过阈值时，系统会记录预警信息并通过邮件通知管理员
-5. **周报**: 系统每周一上午9点自动生成并发送服务器资源使用周报
-6. **管理员登录**: 使用初始账号登录系统，默认账号: `admin`，默认密码: `admin123`（建议首次登录后立即修改密码）
-
-## API接口
-
-- `GET /api/server/list` - 获取服务器列表
-- `GET /api/cpu/history/<ip_address>` - 获取CPU历史数据
-- `GET /api/memory/history/<ip_address>` - 获取内存历史数据
-- `GET /api/disk/history/<ip_address>` - 获取磁盘历史数据
+具体实现建议：
+- 使用Flask框架结合Jinja2模板引擎来构建Web界面，避免引入Vue等复杂前端框架。
+- 钉钉消息推送可通过调用钉钉API实现。
+- 数据存储方面，建议使用SQLAlchemy ORM来操作SQLite数据库，以简化数据库操作。
+- 考虑使用APScheduler库来安排定时任务，如定期收集数据、发送预警通知及生成周报。
+- 为了使图表可视化，可以考虑使用 PLOTLY 库生成内存和硬盘使用率的图表，并将其嵌入到周报邮件中。
+- 为方便部署，确保提供详细的README文档，说明如何使用一键启动脚本以及配置钉钉机器人的步骤。
+- 代码要求全部使用类型提示，以提高代码的可读性和可维护性。
+- 所有的业务代码放在app目录下
+- web页面使用 Bootstrap 页面现代化，美观
 
 ## 项目结构
 
 ```
 Hello-Service-Monitoring/
-├── run.py                 # 启动脚本
-├── requirements.txt       # 依赖列表
-├── .env                   # 环境配置文件
-├── README.md             # 使用说明
-├── logs/                 # 日志目录
-├── db/                   # 数据库文件目录
-├── docs/                 # 文档目录
-├── static/               # 静态文件
-│   ├── css/
-│   └── js/
-├── templates/            # 模板文件
-│   ├── base.html
-│   ├── index.html
-│   └── server_detail.html
-└── app/                  # 业务代码目录
-    ├── __init__.py
-    ├── app.py            # 应用入口
-    ├── config.py         # 配置管理
-    ├── collector.py      # 数据采集模块
-    ├── database.py       # 数据库操作模块
-    ├── models.py         # 数据库模型
-    ├── routes.py         # Flask路由
-    ├── logger.py         # 日志模块
-    ├── services/         # 业务服务模块
-    │   └── weekly_report_service.py  # 周报服务
-    └── monitoring/       # 监控相关模块
-        ├── __init__.py
-        ├── scheduler.py   # 定时任务调度
-        └── alert.py      # 预警机制
+├── app/                    # 主应用目录
+│   ├── __init__.py         # 应用初始化
+│   ├── config.py           # 配置文件
+│   ├── models.py           # 数据模型
+│   ├── collector.py        # 数据采集器
+│   ├── database.py         # 数据库操作
+│   ├── routes.py           # 路由定义
+│   ├── api/                # API接口
+│   ├── services/           # 业务逻辑
+│   ├── templates/          # HTML模板
+│   └── static/             # 静态资源
+├── monitoring/             # 监控相关
+│   └── scheduler.py        # 定时任务调度器
+├── logs/                   # 日志目录
+├── app.py                  # 应用入口
+├── start.sh                # Linux启动脚本
+├── start.bat               # Windows启动脚本
+├── requirements.txt        # 依赖包列表
+├── pyproject.toml          # 项目配置文件
+└── README.md               # 项目说明文档
 ```
 
-## 扩展功能
+## 快速开始
 
-1. **添加更多监控指标**: 可以在 [collector.py](file:///E:/GitHub/Hello-Service-Monitoring/app/collector.py) 中添加更多系统信息采集
-2. **自定义预警阈值**: 修改 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件中的阈值配置
-3. **支持更多数据库**: 修改 [config.py](file:///E:/GitHub/Hello-Service-Monitoring/app/config.py) 中的数据库配置
-4. **自定义周报时间**: 可以在 [scheduler.py](file:///E:/GitHub/Hello-Service-Monitoring/app/monitoring/scheduler.py) 中修改周报发送时间
-5. **添加用户认证**: 可以集成Flask-Login等认证模块
+### 环境要求
+- Python 3.10+
+- uv 包管理工具
 
-## 注意事项
+### 安装步骤
 
-1. 确保系统有足够的权限访问系统资源信息
-2. 邮件配置需要根据实际使用的邮件服务商进行调整
-3. 定时任务间隔可以根据需要在 [.env](file:///E:/GitHub/Hello-Service-Monitoring/.env) 文件中调整
-4. 如果使用MySQL数据库，请确保已安装MySQL服务器并创建了monitoring数据库
-5. MySQL数据库适用于大型部署，小型部署可以使用SQLite
-6. QQ邮箱需要开启SMTP服务并使用授权码而非密码进行验证
+1. 克隆项目代码：
+   ```bash
+   git clone <repository-url>
+   cd Hello-Service-Monitoring
+   ```
 
-## 故障排除
+2. 使用一键启动脚本：
+   - Linux/macOS系统：
+     ```bash
+     chmod +x start.sh
+     ./start.sh
+     ```
+   - Windows系统：
+     ```cmd
+     start.bat
+     ```
 
-1. **无法启动应用**: 检查是否已安装所有依赖
-2. **数据采集失败**: 检查系统权限和psutil库是否正常工作
-3. **邮件预警不工作**: 检查邮件配置是否正确
-4. **图表不显示**: 检查网络连接和JavaScript是否启用
+### 手动安装
 
-## 许可证
+1. 创建虚拟环境：
+   ```bash
+   python -m venv venv
+   ```
 
-MIT License
+2. 激活虚拟环境：
+   - Linux/macOS：
+     ```bash
+     source venv/bin/activate
+     ```
+   - Windows：
+     ```cmd
+     venv\Scripts\activate
+     ```
+
+3. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. 启动应用：
+   ```bash
+   python app.py
+   ```
+
+### 访问应用
+
+启动成功后，打开浏览器访问 `http://localhost:5000` 查看监控界面。
+
+## 配置说明
+
+系统支持通过环境变量进行配置：
+
+- `DATABASE_URL`: 数据库连接字符串，默认为 `sqlite:///../monitoring/monitoring.db`
+- `MEMORY_THRESHOLD`: 内存使用率预警阈值，默认为 80.0
+- `DISK_THRESHOLD`: 磁盘使用率预警阈值，默认为 80.0
+- `DINGTALK_WEBHOOK`: 钉钉机器人Webhook地址
+- `HOST`: 服务监听地址，默认为 0.0.0.0
+- `PORT`: 服务监听端口，默认为 5000
+- `DEBUG`: 是否开启调试模式，默认为 False
+
+## 功能特性
+
+1. **实时监控**: 每5秒自动刷新系统状态
+2. **数据采集**: 定时收集CPU、内存、磁盘、进程等信息
+3. **预警机制**: 资源使用率超过阈值时发送钉钉通知
+4. **可视化展示**: 使用Bootstrap和Plotly展示数据图表
+5. **响应式设计**: 支持各种设备屏幕尺寸
+```

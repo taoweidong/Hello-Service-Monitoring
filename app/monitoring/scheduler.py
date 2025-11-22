@@ -1,199 +1,145 @@
+# monitoring/scheduler.py
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.services.data_collector import DataCollector
-from app.services.remote_collector import RemoteSystemCollector
-from app.services.database import DatabaseManager
-from app.models.models import init_db, RemoteServer
-from app.utils.logger import monitor_logger
-from app.config.config import Config
-import atexit
+from apscheduler.executors.pool import ThreadPoolExecutor
+from datetime import datetime
+import logging
+from typing import Optional
 
-# 全局调度器实例
-scheduler = None
+from app.collector import SystemCollector
+from app.database import DatabaseManager
+from app.config import Config
 
-def collect_and_save_data(app):
-    """采集并保存数据"""
-    with app.app_context():
-        try:
-            # 初始化数据库
-            init_db()
-            
-            # 创建数据库管理器
-            db_manager = DatabaseManager()
-            
-            # 1. 采集本地服务器数据
-            from app.services.local_collector import LocalSystemCollector
-            collector = LocalSystemCollector()
-            db_manager.add_server_info(collector.ip_address, collector.hostname)
-            
-            # 采集所有系统信息
-            all_info = collector.collect_all_info()
-            
-            # 保存数据到数据库
-            if all_info and all_info['cpu_info']:
-                db_manager.save_cpu_info(all_info['cpu_info'])
-                
-            if all_info and all_info['memory_info']:
-                db_manager.save_memory_info(all_info['memory_info'])
-                
-            if all_info and all_info['disk_info']:
-                db_manager.save_disk_info(all_info['disk_info'])
-                
-            if all_info and all_info['process_info']:
-                db_manager.save_process_info(all_info['process_info'])
-            
-            # 检查是否需要预警
-            if all_info:
-                check_thresholds(app, all_info, collector.ip_address)
-            
-            # 2. 采集远程服务器数据
-            session = db_manager.session
-            remote_servers = session.query(RemoteServer).all()
-            
-            for remote_server in remote_servers:
-                try:
-                    remote_collector = RemoteSystemCollector(remote_server)
-                    remote_info = remote_collector.collect_all_info()
-                    
-                    # 添加服务器信息
-                    hostname = 'unknown'
-                    if remote_info and remote_info.get('cpu_info'):
-                        hostname = f"server-{remote_server.ip_address}"
-                    elif remote_info and remote_info.get('hostname') and remote_info['hostname'] != 'unknown':
-                        hostname = remote_info['hostname']
-                    db_manager.add_server_info(remote_server.ip_address, hostname)
-                    
-                    # 保存数据到数据库
-                    if remote_info and remote_info.get('cpu_info'):
-                        db_manager.save_cpu_info(remote_info['cpu_info'])
-                        
-                    if remote_info and remote_info.get('memory_info'):
-                        db_manager.save_memory_info(remote_info['memory_info'])
-                        
-                    if remote_info and remote_info.get('disk_info'):
-                        db_manager.save_disk_info(remote_info['disk_info'])
-                    
-                    # 检查是否需要预警
-                    if remote_info:
-                        check_thresholds(app, remote_info, remote_server.ip_address)
-                except Exception as e:
-                    monitor_logger.error(f"采集远程服务器 {remote_server.ip_address} 数据失败: {e}")
-            
-            db_manager.close()
-            monitor_logger.info("数据采集和保存完成")
-        except Exception as e:
-            monitor_logger.error(f"数据采集和保存失败: {e}")
 
-def check_thresholds(app, all_info, ip_address):
-    """检查阈值并触发预警"""
-    # 延迟导入以避免循环导入
-    from app.monitoring.alert import check_and_alert
+class MonitoringScheduler:
+    """监控调度器"""
     
-    # 检查CPU阈值
-    if all_info.get('cpu_info') and all_info['cpu_info'].get('cpu_percent', 0) > Config.CPU_THRESHOLD:
-        check_and_alert(app, ip_address, 'cpu', 
-                       f"CPU使用率过高: {all_info['cpu_info']['cpu_percent']:.2f}% (阈值: {Config.CPU_THRESHOLD}%)",
-                       all_info)
+    def __init__(self):
+        """初始化调度器"""
+        self.scheduler = BackgroundScheduler(
+            executors={'default': ThreadPoolExecutor(20)},
+            job_defaults={'coalesce': False, 'max_instances': 3}
+        )
+        self.db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
+        self.logger = logging.getLogger(__name__)
     
-    # 检查内存阈值
-    if all_info.get('memory_info') and all_info['memory_info'].get('percent', 0) > Config.MEMORY_THRESHOLD:
-        check_and_alert(app, ip_address, 'memory', 
-                       f"内存使用率过高: {all_info['memory_info']['percent']:.2f}% (阈值: {Config.MEMORY_THRESHOLD}%)",
-                       all_info)
-    
-    # 检查磁盘阈值
-    if all_info.get('disk_info') and all_info['disk_info'].get('percent', 0) > Config.DISK_THRESHOLD:
-        check_and_alert(app, ip_address, 'disk', 
-                       f"磁盘使用率过高: {all_info['disk_info']['percent']:.2f}% (阈值: {Config.DISK_THRESHOLD}%)",
-                       all_info)
-
-def process_alerts_job(app):
-    """处理未发送的预警信息任务"""
-    with app.app_context():
-        from app.monitoring.alert import process_unsent_alerts
-        process_unsent_alerts(app)
-
-def send_weekly_report_job(app):
-    """发送周报邮件任务"""
-    with app.app_context():
-        from app.services.weekly_report_service import WeeklyReportService
-        weekly_report_service = WeeklyReportService()
-        weekly_report_service.send_weekly_report_email()
-        weekly_report_service.close()
-
-def start_scheduler(app):
-    """启动定时任务调度器"""
-    global scheduler
-    
-    if scheduler is not None:
-        return scheduler
-    
-    try:
-        # 创建调度器
-        scheduler = BackgroundScheduler()
-        
-        # 添加定时任务，每2分钟执行一次
-        scheduler.add_job(
-            func=collect_and_save_data,
-            trigger="interval",
-            minutes=Config.SCHEDULE_INTERVAL_MINUTES,
-            args=[app],
-            id='system_monitoring',
-            name='系统监控数据采集',
-            replace_existing=True
+    def start(self):
+        """启动调度器"""
+        # 添加定时任务
+        self.scheduler.add_job(
+            self.collect_system_data,
+            'interval',
+            seconds=10,  # 每10秒收集一次数据
+            id='collect_system_data'
         )
         
-        # 添加处理未发送预警的任务，每5分钟执行一次
-        scheduler.add_job(
-            func=process_alerts_job,
-            trigger="interval",
-            minutes=5,
-            args=[app],
-            id='process_alerts',
-            name='处理未发送的预警信息',
-            replace_existing=True
+        self.scheduler.add_job(
+            self.check_thresholds,
+            'interval',
+            minutes=60,  # 每小时检查一次阈值
+            id='check_thresholds'
         )
         
-        # 添加每周发送周报的任务，每周一上午9点执行
-        scheduler.add_job(
-            func=send_weekly_report_job,
-            trigger="cron",
-            day_of_week=0,  # 0表示周日，1表示周一
-            hour=9,
+        self.scheduler.add_job(
+            self.generate_weekly_report,
+            'cron',
+            day_of_week=0,  # 每周日
+            hour=9,  # 上午9点
             minute=0,
-            args=[app],
-            id='weekly_report',
-            name='发送周报邮件',
-            replace_existing=True
+            id='generate_weekly_report'
         )
         
-        # 启动调度器
-        scheduler.start()
-        monitor_logger.info(f"定时任务调度器已启动，采集间隔: {Config.SCHEDULE_INTERVAL_MINUTES}分钟")
-        
-        # 注册退出时停止调度器
-        if scheduler:
-            atexit.register(lambda: scheduler.shutdown() if scheduler else None)
-        
-        # 立即执行一次数据采集
-        scheduler.add_job(
-            func=collect_and_save_data,
-            trigger="date",
-            args=[app],
-            id='initial_collection',
-            name='初始数据采集',
-            replace_existing=True
-        )
-        
-        return scheduler
-    except Exception as e:
-        monitor_logger.error(f"启动定时任务调度器失败: {e}")
-        return None
-
-def stop_scheduler():
-    """停止定时任务调度器"""
-    global scheduler
+        self.scheduler.start()
+        self.logger.info("监控调度器已启动")
     
-    if scheduler:
-        scheduler.shutdown()
-        scheduler = None
-        monitor_logger.info("定时任务调度器已停止")
+    def shutdown(self):
+        """关闭调度器"""
+        self.scheduler.shutdown()
+        self.logger.info("监控调度器已关闭")
+    
+    def collect_system_data(self):
+        """收集系统数据并保存到数据库"""
+        try:
+            self.logger.info("开始收集系统数据")
+            
+            # 收集系统信息
+            system_info = SystemCollector.get_system_info()
+            
+            # 收集磁盘信息
+            disk_info = SystemCollector.get_disk_info()
+            
+            # 收集进程信息
+            process_info = SystemCollector.get_process_info()
+            
+            # 保存到数据库
+            self.db_manager.save_system_info(system_info)
+            self.db_manager.save_disk_info(disk_info)
+            self.db_manager.save_process_info(process_info)
+            
+            self.logger.info("系统数据收集完成")
+        except Exception as e:
+            self.logger.error(f"收集系统数据时出错: {e}")
+    
+    def check_thresholds(self):
+        """检查资源使用阈值并发送预警"""
+        try:
+            self.logger.info("开始检查资源阈值")
+            
+            # 获取最新的系统信息
+            system_info = SystemCollector.get_system_info()
+            disk_info = SystemCollector.get_disk_info()
+            
+            # 检查内存使用率
+            memory_percent = system_info.get('memory_percent', 0)
+            if memory_percent > Config.MEMORY_THRESHOLD:
+                message = f"内存使用率过高: {memory_percent}%"
+                self.db_manager.save_alert_record("memory", message)
+                self.send_dingtalk_alert(message)
+            
+            # 检查磁盘使用率
+            for disk in disk_info:
+                disk_percent = disk.get('percent', 0)
+                if disk_percent > Config.DISK_THRESHOLD:
+                    message = f"磁盘 {disk['device']} 使用率过高: {disk_percent}%"
+                    self.db_manager.save_alert_record("disk", message)
+                    self.send_dingtalk_alert(message)
+            
+            self.logger.info("资源阈值检查完成")
+        except Exception as e:
+            self.logger.error(f"检查资源阈值时出错: {e}")
+    
+    def send_dingtalk_alert(self, message: str):
+        """发送钉钉预警消息"""
+        import requests
+        import json
+        
+        if not Config.DINGTALK_WEBHOOK:
+            self.logger.warning("未配置钉钉Webhook，无法发送预警消息")
+            return
+        
+        try:
+            payload = {
+                "msgtype": "text",
+                "text": {
+                    "content": f"[服务器监控预警] {message}\n时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                }
+            }
+            
+            response = requests.post(Config.DINGTALK_WEBHOOK, json=payload)
+            if response.status_code == 200:
+                self.logger.info("钉钉预警消息发送成功")
+            else:
+                self.logger.error(f"钉钉预警消息发送失败: {response.text}")
+        except Exception as e:
+            self.logger.error(f"发送钉钉预警消息时出错: {e}")
+    
+    def generate_weekly_report(self):
+        """生成周报"""
+        try:
+            self.logger.info("开始生成周报")
+            # TODO: 实现周报生成功能
+            # 1. 从数据库获取一周的数据
+            # 2. 生成图表
+            # 3. 发送邮件
+            self.logger.info("周报生成完成")
+        except Exception as e:
+            self.logger.error(f"生成周报时出错: {e}")
