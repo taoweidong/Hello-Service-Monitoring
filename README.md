@@ -4,23 +4,6 @@
 
 服务器监控系统是一个用于实时监控服务器状态的工具，可以监控CPU、内存、磁盘、进程等资源使用情况，并提供预警机制。
 
-## 项目要求
-
-- 支持Linux和Windows操作系统下的监控，需提供一键启动服务脚本，该脚本应包括虚拟环境创建、依赖项安装、服务启动等功能，以简化部署过程。
-- 使用`uv`管理Python项目。
-- python使用面向对象的方式编写，注意一个类一个文件
-
-具体实现建议：
-- 使用Flask框架结合Jinja2模板引擎来构建Web界面，避免引入Vue等复杂前端框架。
-- 钉钉消息推送可通过调用钉钉API实现。
-- 数据存储方面，建议使用SQLAlchemy ORM来操作SQLite数据库，以简化数据库操作。
-- 考虑使用APScheduler库来安排定时任务，如定期收集数据、发送预警通知及生成周报。
-- 为了使图表可视化，可以考虑使用 PLOTLY 库生成内存和硬盘使用率的图表，并将其嵌入到周报邮件中。
-- 为方便部署，确保提供详细的README文档，说明如何使用一键启动脚本以及配置钉钉机器人的步骤。
-- 代码要求全部使用类型提示，以提高代码的可读性和可维护性。
-- 所有的业务代码放在app目录下
-- web页面使用 Bootstrap 页面现代化，美观
-
 ## 项目结构
 
 ```
@@ -63,11 +46,122 @@
 4. **可视化展示**: 使用Bootstrap和Plotly展示数据图表
 5. **响应式设计**: 支持各种设备屏幕尺寸
 
-## 安装和部署
+## 本地开发环境搭建
 
-### 使用uv安装（推荐）
+### 环境要求
 
-1. 安装uv包管理器：
+- Python 3.8 或更高版本
+- pip 包管理器
+- Git（可选，用于版本控制）
+
+### Windows 环境搭建步骤
+
+1. **安装 Python**
+   - 访问 [Python 官方网站](https://www.python.org/downloads/) 下载并安装 Python 3.8 或更高版本
+   - 确保在安装时勾选 "Add Python to PATH" 选项
+
+2. **克隆项目代码**
+   ```bash
+   git clone <项目地址>
+   cd Hello-Service-Monitoring
+   ```
+   或者直接下载项目压缩包并解压
+
+3. **创建虚拟环境**
+   ```bash
+   python -m venv .venv
+   ```
+
+4. **激活虚拟环境**
+   ```bash
+   .venv\Scripts\activate
+   ```
+
+5. **升级 pip**
+   ```bash
+   python -m pip install --upgrade pip
+   ```
+
+6. **安装项目依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+7. **初始化数据库**
+   ```bash
+   python init_db.py
+   ```
+
+8. **启动开发服务器**
+   ```bash
+   python app.py
+   ```
+   或使用后台启动脚本：
+   ```bash
+   start.bat
+   ```
+
+9. **访问应用**
+   打开浏览器访问 http://localhost:5000
+
+### Linux/macOS 环境搭建步骤
+
+1. **安装 Python**
+   - 大多数 Linux 发行版和 macOS 都预装了 Python
+   - 检查 Python 版本：
+     ```bash
+     python3 --version
+     ```
+   - 如果未安装或版本过低，请参考对应系统的安装指南
+
+2. **克隆项目代码**
+   ```bash
+   git clone <项目地址>
+   cd Hello-Service-Monitoring
+   ```
+
+3. **创建虚拟环境**
+   ```bash
+   python3 -m venv .venv
+   ```
+
+4. **激活虚拟环境**
+   ```bash
+   source .venv/bin/activate
+   ```
+
+5. **升级 pip**
+   ```bash
+   pip install --upgrade pip
+   ```
+
+6. **安装项目依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+7. **初始化数据库**
+   ```bash
+   python3 init_db.py
+   ```
+
+8. **启动开发服务器**
+   ```bash
+   python3 app.py
+   ```
+   或使用后台启动脚本：
+   ```bash
+   ./start.sh
+   ```
+
+9. **访问应用**
+   打开浏览器访问 http://localhost:5000
+
+### 使用 uv 安装（推荐）
+
+uv 是一个极快的 Python 包安装器和解析器。
+
+1. 安装 uv 包管理器：
    ```bash
    pip install uv
    ```
@@ -81,37 +175,6 @@
 3. 安装依赖：
    ```bash
    uv sync
-   ```
-
-4. 初始化数据库：
-   ```bash
-   python init_db.py
-   ```
-
-5. 启动服务：
-   ```bash
-   python app.py
-   ```
-
-### 使用传统pip安装
-
-1. 克隆项目：
-   ```bash
-   git clone <项目地址>
-   cd Hello-Service-Monitoring
-   ```
-
-2. 创建虚拟环境：
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   # 或
-   venv\Scripts\activate     # Windows
-   ```
-
-3. 安装依赖：
-   ```bash
-   pip install -r requirements.txt
    ```
 
 4. 初始化数据库：
@@ -167,16 +230,6 @@ alembic upgrade head
 - `MEMORY_THRESHOLD`: 内存使用率预警阈值
 - `DISK_THRESHOLD`: 磁盘使用率预警阈值
 
-## API接口
-
-- `/`: 主页
-- `/api/server-ip`: 获取服务器IP地址
-- `/api/system-info`: 获取系统信息
-- `/api/cpu-info`: 获取CPU信息
-- `/api/memory-info`: 获取内存信息
-- `/api/disk-info`: 获取磁盘信息
-- `/api/processes`: 获取进程信息
-- `/api/detailed-system-info`: 获取详细系统信息
 
 ## 预警机制
 
