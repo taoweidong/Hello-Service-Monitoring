@@ -678,9 +678,16 @@ def api_send_weekly_report():
             ]
             
             # 获取高负载进程（按内存使用率排序，取前10）
-            top_processes = session.query(ProcessInfo).filter(
+            # 首先获取最新的时间戳
+            latest_timestamp = session.query(func.max(ProcessInfo.timestamp)).filter(
                 ProcessInfo.timestamp >= week_ago
-            ).order_by(desc(ProcessInfo.memory_percent)).limit(10).all()
+            ).scalar()
+            
+            # 然后获取该时间戳下的所有进程数据，并按内存使用率排序取前10
+            top_processes = session.query(ProcessInfo).filter(
+                ProcessInfo.timestamp == latest_timestamp
+            ).order_by(desc(ProcessInfo.memory_percent)).limit(10).all() if latest_timestamp else []
+            
             # 将ProcessInfo对象转换为字典，避免Session关闭后访问对象属性的问题
             top_processes_data = [
                 {
