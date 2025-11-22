@@ -661,21 +661,33 @@ def api_send_weekly_report():
                 DiskInfo.timestamp >= week_ago
             ).scalar() or 0
             
-            # 获取本周预警记录
-            alerts = session.query(AlertRecord).filter(
-                AlertRecord.timestamp >= week_ago
-            ).order_by(desc(AlertRecord.timestamp)).all()
-            # 将AlertRecord对象转换为字典，避免Session关闭后访问对象属性的问题
-            alerts_data = [
-                {
-                    'id': alert.id,
-                    'timestamp': alert.timestamp,
-                    'alert_type': alert.alert_type,
-                    'message': alert.message,
-                    'is_sent': alert.is_sent
-                }
-                for alert in alerts
-            ]
+            # 根据本周内存和磁盘使用情况生成真实的预警信息
+            from app.config import Config
+            alerts_data = []
+            
+            # 检查内存使用情况
+            if memory_avg > Config.MEMORY_THRESHOLD:
+                alerts_data.append({
+                    'timestamp': datetime.now(),
+                    'alert_type': 'memory',
+                    'message': f'本周平均内存使用率 {memory_avg:.2f}% 超过阈值 {Config.MEMORY_THRESHOLD}%',
+                    'is_sent': 1
+                })
+            
+            # 检查磁盘使用情况
+            if disk_max > Config.DISK_THRESHOLD:
+                # 获取磁盘使用率最高的记录详情
+                max_disk_record = session.query(DiskInfo).filter(
+                    DiskInfo.timestamp >= week_ago
+                ).order_by(desc(DiskInfo.percent)).first()
+                
+                if max_disk_record:
+                    alerts_data.append({
+                        'timestamp': max_disk_record.timestamp,
+                        'alert_type': 'disk',
+                        'message': f'本周磁盘 {max_disk_record.device} 最高使用率 {max_disk_record.percent:.2f}% 超过阈值 {Config.DISK_THRESHOLD}%',
+                        'is_sent': 1
+                    })
             
             # 获取高负载进程（按内存使用率排序，取前10）
             # 首先获取最新的时间戳
