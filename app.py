@@ -7,6 +7,22 @@
 
 import os
 import sys
+import io
+
+# 设置标准输出编码为UTF-8
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+# 检查是否在虚拟环境中运行
+in_venv = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
+
+if not in_venv:
+    print("警告：未在虚拟环境中运行，可能会遇到依赖问题")
+
+import os
+import sys
 import time
 from loguru import logger
 from logging.handlers import RotatingFileHandler
@@ -43,7 +59,10 @@ def setup_logging():
     logger.add(
         sys.stdout,
         level="INFO",
-        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+        enqueue=True,
+        backtrace=True,
+        diagnose=True
     )
     
     return logger
