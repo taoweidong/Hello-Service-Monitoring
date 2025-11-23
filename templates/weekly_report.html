@@ -194,20 +194,16 @@
                         <div class="server-detail-value">{{ server_info.system }} {{ server_info.release }}</div>
                     </div>
                     <div class="server-detail-item">
-                        <div class="server-detail-label">处理器</div>
-                        <div class="server-detail-value">{{ server_info.processor }}</div>
+                        <div class="server-detail-label">架构信息</div>
+                        <div class="server-detail-value">{{ server_info.machine }}</div>
                     </div>
                     <div class="server-detail-item">
-                        <div class="server-detail-label">CPU核心数</div>
-                        <div class="server-detail-value">{{ server_info.cpu_count_physical }} 物理核心, {{ server_info.cpu_count_logical }} 逻辑核心</div>
+                        <div class="server-detail-label">内存使用情况</div>
+                        <div class="server-detail-value">{{ "%.2f"|format((server_info.memory.total - server_info.memory.available) / (1024*1024*1024)) }} GB / {{ "%.2f"|format(server_info.memory.total / (1024*1024*1024)) }} GB</div>
                     </div>
                     <div class="server-detail-item">
-                        <div class="server-detail-label">总内存</div>
-                        <div class="server-detail-value">{{ "%.2f"|format(server_info.memory.total / (1024*1024*1024)) }} GB</div>
-                    </div>
-                    <div class="server-detail-item">
-                        <div class="server-detail-label">Python版本</div>
-                        <div class="server-detail-value">{{ server_info.python_version }}</div>
+                        <div class="server-detail-label">硬盘使用情况</div>
+                        <div class="server-detail-value">{{ "%.2f"|format((disk_info.total - disk_info.free) / (1024*1024*1024)) }} GB / {{ "%.2f"|format(disk_info.total / (1024*1024*1024)) }} GB</div>
                     </div>
                 </div>
             </div>
@@ -284,7 +280,7 @@
         
         <div class="footer">
             <p>此报告由服务器监控系统自动生成</p>
-            <p>如需查看详细信息，请访问监控系统Web界面</p>
+            <p>如需查看详细信息，请访问监控系统Web界面: <a href="http://{{ server_ip }}:5000">http://{{ server_ip }}:5000</a></p>
         </div>
     </div>
 </body>

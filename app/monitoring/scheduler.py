@@ -47,10 +47,8 @@ class MonitoringScheduler:
         
         self.scheduler.add_job(
             self.generate_weekly_report,
-            'cron',
-            day_of_week=0,  # 每周日
-            hour=9,  # 上午9点
-            minute=0,
+            'interval',
+            minutes=5,  # 每5分钟发送一次测试邮件
             id='generate_weekly_report',
             timezone=Config.LOCAL_TIMEZONE  # 使用配置中的本地时区
         )
@@ -96,13 +94,18 @@ class MonitoringScheduler:
             self.logger.error(f"检查资源阈值时出错: {e}")
     
     def generate_weekly_report(self) -> None:
-        """生成周报"""
+        """生成周报并发送邮件"""
         try:
             self.logger.info("开始生成周报")
-            # TODO: 实现周报生成功能
-            # 1. 从数据库获取一周的数据
-            # 2. 生成图表
-            # 3. 发送邮件
-            self.logger.info("周报生成完成")
+            # 调用ReportHandler发送周报邮件
+            from ..api.handlers.report_handler import ReportHandler
+            report_handler = ReportHandler(self.db_manager)
+            result, status_code = report_handler.send_weekly_report()
+            
+            if status_code == 200:
+                self.logger.info("周报邮件发送成功")
+            else:
+                self.logger.error(f"周报邮件发送失败: {result}")
+                
         except Exception as e:
             self.logger.error(f"生成周报时出错: {e}")

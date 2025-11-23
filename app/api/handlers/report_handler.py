@@ -46,6 +46,14 @@ class ReportHandler:
             from ..routes import get_server_ip
             server_ip = get_server_ip()
             
+            # 获取磁盘信息
+            disk_info = SystemCollector.get_disk_info()
+            # 获取第一个磁盘分区的信息作为总体磁盘信息
+            primary_disk_info = disk_info[0] if disk_info else {
+                'total': 0,
+                'free': 0
+            }
+            
             with self.db_manager.get_session() as session:
                 # 获取系统信息统计数据
                 cpu_avg = session.query(func.avg(SystemInfo.cpu_percent)).filter(
@@ -138,6 +146,7 @@ class ReportHandler:
                     'report_date': datetime.now().strftime('%Y年%m月%d日'),
                     'server_info': server_info,
                     'server_ip': server_ip,
+                    'disk_info': primary_disk_info,
                     'cpu_avg': round(cpu_avg, 2),
                     'memory_avg': round(memory_avg, 2),
                     'disk_max': round(disk_max, 2),
