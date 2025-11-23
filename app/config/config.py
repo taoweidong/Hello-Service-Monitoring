@@ -42,3 +42,19 @@ class Config:
     # 监控阈值配置
     MEMORY_THRESHOLD: float = float(os.environ.get('MEMORY_THRESHOLD') or 80.0)
     DISK_THRESHOLD: float = float(os.environ.get('DISK_THRESHOLD') or 80.0)
+    
+    # 定时任务频率配置（秒）
+    COLLECT_SYSTEM_DATA_INTERVAL: int = int(os.environ.get('COLLECT_SYSTEM_DATA_INTERVAL') or 10)
+    CHECK_THRESHOLDS_INTERVAL: int = int(os.environ.get('CHECK_THRESHOLDS_INTERVAL') or 3600)
+    
+    # 解析GENERATE_WEEKLY_REPORT_INTERVAL，支持表达式
+    _generate_weekly_report_interval = os.environ.get('GENERATE_WEEKLY_REPORT_INTERVAL') or '300'
+    try:
+        GENERATE_WEEKLY_REPORT_INTERVAL: int = int(_generate_weekly_report_interval)
+    except ValueError:
+        # 如果是表达式，尝试计算
+        try:
+            GENERATE_WEEKLY_REPORT_INTERVAL: int = int(eval(_generate_weekly_report_interval))
+        except:
+            # 如果计算失败，使用默认值
+            GENERATE_WEEKLY_REPORT_INTERVAL: int = 300

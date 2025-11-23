@@ -34,21 +34,21 @@ class MonitoringScheduler:
         self.scheduler.add_job(
             self.collect_system_data,
             'interval',
-            seconds=10,  # 每10秒收集一次数据
+            seconds=Config.COLLECT_SYSTEM_DATA_INTERVAL,  # 收集系统数据的时间间隔
             id='collect_system_data'
         )
         
         self.scheduler.add_job(
             self.check_thresholds,
             'interval',
-            minutes=60,  # 每小时检查一次阈值
+            seconds=Config.CHECK_THRESHOLDS_INTERVAL,  # 检查阈值的时间间隔
             id='check_thresholds'
         )
         
         self.scheduler.add_job(
             self.generate_weekly_report,
             'interval',
-            minutes=5,  # 每5分钟发送一次测试邮件
+            seconds=Config.GENERATE_WEEKLY_REPORT_INTERVAL,  # 生成周报的时间间隔
             id='generate_weekly_report',
             timezone=Config.LOCAL_TIMEZONE  # 使用配置中的本地时区
         )
