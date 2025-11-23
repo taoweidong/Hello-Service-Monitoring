@@ -1,11 +1,7 @@
 # app/api/handlers/report_handler.py
 from flask import jsonify
 import os
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from jinja2 import Environment, FileSystemLoader
-import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
@@ -19,6 +15,8 @@ from ...database.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
 from ...monitoring.collector import SystemCollector
 from ...config.config import Config
 from ...utils.helpers import get_current_local_time
+from ...utils.email_utils import EmailSender
+from ...utils.chart_utils import ChartGenerator
 from ..handlers.system_handler import SystemHandler
 from ..handlers.process_handler import ProcessHandler
 from ..handlers.disk_handler import DiskHandler
@@ -158,6 +156,9 @@ class ReportHandler:
                 }
             
             # 2. 生成图表
+            # 使用新的图表工具类
+            chart_generator = ChartGenerator()
+            
             # 获取一周的历史数据
             with self.db_manager.get_session() as session:
                 history_data = session.query(
@@ -168,49 +169,37 @@ class ReportHandler:
                     SystemInfo.timestamp >= week_ago
                 ).order_by(SystemInfo.timestamp).all()
             
-            # 设置中文字体
-            plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
-            plt.rcParams['axes.unicode_minus'] = False
-            
+            # 生成资源使用趋势图
             if not history_data:
                 # 如果没有数据，创建一个空图表
-                fig, ax = plt.subplots(figsize=(10, 6))
-                ax.text(0.5, 0.5, '暂无数据', ha='center', va='center', transform=ax.transAxes)
-                ax.set_title('资源使用趋势')
+                chart_path = chart_generator.create_empty_chart(
+                    message="暂无数据",
+                    title="资源使用趋势 (过去7天)",
+                    filename="weekly_trend_chart.png"
+                )
             else:
                 # 提取数据
                 timestamps = [record.timestamp for record in history_data]
                 cpu_percents = [record.cpu_percent for record in history_data]
                 memory_percents = [record.memory_percent for record in history_data]
                 
-                # 创建图表
-                fig, ax = plt.subplots(figsize=(12, 6))
-                ax.plot(timestamps, cpu_percents, label='CPU使用率', linewidth=2, color='#4361ee')
-                ax.plot(timestamps, memory_percents, label='内存使用率', linewidth=2, color='#f72585')
-                
-                # 设置图表样式
-                ax.set_title('资源使用趋势 (过去7天)', fontsize=16, fontweight='bold')
-                ax.set_xlabel('时间', fontsize=12)
-                ax.set_ylabel('使用率 (%)', fontsize=12)
-                ax.legend()
-                ax.grid(True, alpha=0.3)
-                
-                # 格式化x轴日期
-                fig.autofmt_xdate()
-            
-            # 保存图表
-            chart_dir = os.path.join(Config.BASE_DIR, 'temp')
-            if not os.path.exists(chart_dir):
-                os.makedirs(chart_dir)
-                
-            chart_path = os.path.join(chart_dir, 'weekly_trend_chart.png')
-            plt.tight_layout()
-            plt.savefig(chart_path, dpi=300, bbox_inches='tight')
-            plt.close()
+                # 创建折线图
+                chart_path = chart_generator.create_line_chart(
+                    x_data=timestamps,
+                    y_data=[cpu_percents, memory_percents],
+                    labels=['CPU使用率', '内存使用率'],
+                    title='资源使用趋势 (过去7天)',
+                    x_label='时间',
+                    y_label='使用率 (%)',
+                    filename='weekly_trend_chart.png'
+                )
             
             # 3. 发送邮件
+            # 使用新的邮件工具类
+            email_sender = EmailSender()
+            
             # 检查邮件配置
-            if not Config.MAIL_SERVER or not Config.MAIL_USERNAME or not Config.MAIL_PASSWORD:
+            if not email_sender.is_configured():
                 self.logger.warning("邮件配置不完整，无法发送周报")
                 return jsonify({'error': '邮件配置不完整'}), 500
             
@@ -220,34 +209,29 @@ class ReportHandler:
             template = env.get_template('weekly_report.html')
             html_content = template.render(**weekly_data)
             
-            # 创建邮件
-            msg = MIMEMultipart('related')
+            # 准备邮件参数
             # 在邮件主题中添加服务器IP信息
             server_ip = weekly_data.get('server_ip', 'unknown')
-            msg['Subject'] = f"服务器监控周报 ({server_ip}) - {weekly_data['report_date']}"
-            msg['From'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
-            msg['To'] = Config.MAIL_DEFAULT_SENDER or Config.MAIL_USERNAME
+            subject = f"服务器监控周报 ({server_ip}) - {weekly_data['report_date']}"
             
-            # 添加HTML内容
-            html_part = MIMEText(html_content, 'html', 'utf-8')
-            msg.attach(html_part)
-            
-            # 添加图表附件
+            # 准备图片附件
+            images = []
             if chart_path and os.path.exists(chart_path):
-                with open(chart_path, 'rb') as f:
-                    img = MIMEImage(f.read())
-                    img.add_header('Content-ID', '<resource_trend_chart>')
-                    msg.attach(img)
+                images.append((chart_path, 'resource_trend_chart'))
             
             # 发送邮件
-            server = smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT)
-            server.starttls()
-            server.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
-            server.send_message(msg)
-            server.quit()
+            success = email_sender.send_email(
+                subject=subject,
+                html_content=html_content,
+                images=images
+            )
             
-            self.logger.info("手动触发周报邮件发送成功")
-            return jsonify({'message': '周报邮件发送成功'}), 200
+            if success:
+                self.logger.info("手动触发周报邮件发送成功")
+                return jsonify({'message': '周报邮件发送成功'}), 200
+            else:
+                return jsonify({'error': '邮件发送失败'}), 500
+                
         except Exception as e:
             self.logger.error(f"发送周报邮件时出错: {e}")
             return jsonify({'error': str(e)}), 500
