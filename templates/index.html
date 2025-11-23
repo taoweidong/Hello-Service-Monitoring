@@ -249,7 +249,16 @@
             <p class="text-center text-white-50 mb-0">实时监控服务器状态与资源使用情况</p>
             <div class="text-center">
                 <div class="server-ip" id="server-ip">
-                    <span class="loading-spinner"></span> 获取服务器IP地址中...
+                    {% if server_ip %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-server me-2" viewBox="0 0 16 16">
+                            <path d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4c0 1.473-2.985 2.667-6.667 2.667S1.333 5.473 1.333 4V2.667z"/>
+                            <path d="M1.333 6.334v3C1.333 10.805 4.318 12 8 12s6.667-1.194 6.667-2.667V6.334a6.51 6.51 0 0 1-1.458.79C11.81 7.684 9.967 8 8 8c-1.966 0-3.809-.317-5.208-.876a6.509 6.509 0 0 1-1.458-.79z"/>
+                            <path d="M14.667 11.668a6.51 6.51 0 0 1-1.458.789c-1.4.56-3.242.876-5.21.876-1.966 0-3.809-.316-5.208-.876a6.51 6.51 0 0 1-1.458-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
+                        </svg>
+                        服务器IP: {{ server_ip }}
+                    {% else %}
+                        <span class="loading-spinner"></span> 获取服务器IP地址中...
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -306,6 +315,84 @@
             <h2 class="section-title">服务器详细信息</h2>
             <div class="system-info-card card">
                 <div class="card-body">
+                    {% if system_info %}
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">操作系统</div>
+                                <div class="system-info-value" id="os-info">{{ system_info.system }} {{ system_info.release }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">系统版本</div>
+                                <div class="system-info-value" id="os-version">{{ system_info.version }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">主机名</div>
+                                <div class="system-info-value" id="hostname">{{ system_info.node }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">架构</div>
+                                <div class="system-info-value" id="architecture">{{ system_info.machine }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">处理器</div>
+                                <div class="system-info-value" id="processor">{{ system_info.processor or '未知' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">Python版本</div>
+                                <div class="system-info-value" id="python-version-detail">{{ system_info.python_version }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">CPU核心数</div>
+                                <div class="system-info-value" id="cpu-cores">{{ system_info.cpu_count_physical or '未知' }} 物理核心, {{ system_info.cpu_count_logical or '未知' }} 逻辑核心</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">总内存</div>
+                                <div class="system-info-value" id="total-memory">
+                                    {% if system_info.memory %}
+                                        {{ "%.2f"|format(system_info.memory.total / (1024*1024*1024)) }} GB
+                                    {% else %}
+                                        未知
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">启动时间</div>
+                                <div class="system-info-value" id="boot-time">
+                                    {% if system_info.boot_time %}
+                                        {{ system_info.boot_time|datetime }}
+                                    {% else %}
+                                        未知
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="system-info-item">
+                                <div class="system-info-label">内核版本</div>
+                                <div class="system-info-value" id="kernel-version">{{ system_info.version }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
                     <div class="row">
                         <div class="col-lg-2 col-md-4 col-sm-6">
                             <div class="system-info-item">
@@ -370,6 +457,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -387,7 +475,13 @@
                                 </svg>
                             </div>
                             <h5 class="card-title">Python</h5>
-                            <p class="card-text" id="python-version">未安装</p>
+                            <p class="card-text" id="python-version">
+                                {% if app_versions and app_versions.python %}
+                                    {{ app_versions.python }}
+                                {% else %}
+                                    未安装
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -402,7 +496,13 @@
                                 </svg>
                             </div>
                             <h5 class="card-title">Java</h5>
-                            <p class="card-text" id="java-version">未安装</p>
+                            <p class="card-text" id="java-version">
+                                {% if app_versions and app_versions.java %}
+                                    {{ app_versions.java }}
+                                {% else %}
+                                    未安装
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -416,7 +516,13 @@
                                 </svg>
                             </div>
                             <h5 class="card-title">Docker</h5>
-                            <p class="card-text" id="docker-version">未安装</p>
+                            <p class="card-text" id="docker-version">
+                                {% if app_versions and app_versions.docker %}
+                                    {{ app_versions.docker }}
+                                {% else %}
+                                    未安装
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>

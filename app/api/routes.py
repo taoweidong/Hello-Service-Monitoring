@@ -14,6 +14,7 @@ from app.api.handlers.process_handler import ProcessHandler
 from app.api.handlers.disk_handler import DiskHandler
 from app.api.handlers.memory_handler import MemoryHandler
 from app.api.handlers.report_handler import ReportHandler
+from app.monitoring.collector import SystemCollector  # 添加导入
 
 main_bp = Blueprint('main', __name__)
 db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
@@ -64,8 +65,29 @@ def get_server_ip():
 
 @main_bp.route('/')
 def index():
-    """首页视图"""
-    return render_template('index.html')
+    """首页视图 - 使用Jinja2模板渲染初始数据"""
+    try:
+        # 获取系统详细信息用于页面渲染
+        detailed_system_info = SystemCollector.get_detailed_system_info()
+        
+        # 获取应用程序版本信息
+        app_versions = SystemCollector.get_application_versions()
+        
+        # 获取服务器IP
+        server_ip = get_server_ip()
+        
+        # 准备模板数据
+        template_data = {
+            'server_ip': server_ip,
+            'system_info': detailed_system_info,
+            'app_versions': app_versions
+        }
+        
+        return render_template('index.html', **template_data)
+    except Exception as e:
+        logger.error(f"渲染首页时出错: {e}")
+        # 出错时仍然返回模板，但不包含初始数据
+        return render_template('index.html')
 
 
 @main_bp.route('/api/server-ip')
