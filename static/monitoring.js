@@ -289,14 +289,30 @@ class MonitoringDataLoader {
      */
     async loadDiskTrend() {
         try {
+            console.log("开始加载磁盘趋势数据...");
             const response = await fetch('/api/trend/disk');
+            console.log("磁盘趋势API响应状态:", response.status);
             const data = await response.json();
+            console.log("磁盘趋势API返回数据:", data);
             
             if (data.history && Object.keys(data.history).length > 0) {
+                console.log("磁盘趋势数据不为空，开始绘制图表...");
                 this.drawDiskChart(data.history);
+            } else {
+                console.log("磁盘趋势数据为空");
+                // 显示无数据提示
+                const chartElement = document.getElementById('disk-chart');
+                if (chartElement) {
+                    chartElement.innerHTML = '<div class="alert alert-info">暂无磁盘趋势数据</div>';
+                }
             }
         } catch (error) {
             console.error('获取磁盘趋势数据失败:', error);
+            // 显示错误提示
+            const chartElement = document.getElementById('disk-chart');
+            if (chartElement) {
+                chartElement.innerHTML = '<div class="alert alert-warning">获取磁盘趋势数据失败</div>';
+            }
         }
     }
     
@@ -343,42 +359,91 @@ class MonitoringDataLoader {
      * 绘制磁盘使用趋势图表
      */
     drawDiskChart(historyData) {
-        if (!historyData || Object.keys(historyData).length === 0) return;
-        
-        // 创建图表数据
-        const chartData = [];
-        
-        // 为每个磁盘设备创建一条线
-        for (const device in historyData) {
-            const deviceData = historyData[device];
-            const timestamps = deviceData.map(item => new Date(item.timestamp));
-            const percents = deviceData.map(item => item.percent);
+        try {
+            console.log("开始绘制磁盘趋势图表...", historyData);
+            if (!historyData || Object.keys(historyData).length === 0) {
+                console.log("磁盘趋势数据为空，无法绘制图表");
+                return;
+            }
             
-            chartData.push({
-                x: timestamps,
-                y: percents,
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: device,
-                line: {shape: 'spline', color: '#4cc9f0'},
-                marker: {size: 6}
-            });
-        }
-        
-        // 图表布局
-        const layout = {
-            title: '磁盘使用趋势',
-            xaxis: {title: '时间'},
-            yaxis: {title: '使用率(%)', range: [0, 100]},
-            margin: {t: 30, l: 50, r: 30, b: 50}
-        };
-        
-        // 绘制图表
-        const chartElement = document.getElementById('disk-chart');
-        if (chartElement) {
-            // 确保Plotly已经加载
-            if (typeof Plotly !== 'undefined') {
-                Plotly.newPlot('disk-chart', chartData, layout);
+            // 创建图表数据
+            const chartData = [];
+            
+            // 为每个磁盘设备创建一条线
+            for (const device in historyData) {
+                console.log("处理磁盘设备:", device);
+                const deviceData = historyData[device];
+                console.log("设备数据:", deviceData);
+                
+                // 检查数据是否有效
+                if (!deviceData || deviceData.length === 0) {
+                    console.log("设备数据为空，跳过:", device);
+                    continue;
+                }
+                
+                const timestamps = deviceData.map(item => new Date(item.timestamp));
+                const percents = deviceData.map(item => {
+                    // 确保percent是有效数字
+                    const percent = parseFloat(item.percent);
+                    return isNaN(percent) ? 0 : percent;
+                });
+                
+                chartData.push({
+                    x: timestamps,
+                    y: percents,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: device,
+                    line: {shape: 'spline', color: '#4cc9f0'},
+                    marker: {size: 6}
+                });
+            }
+            
+            // 检查是否有有效数据
+            if (chartData.length === 0) {
+                console.log("没有有效的图表数据");
+                const chartElement = document.getElementById('disk-chart');
+                if (chartElement) {
+                    chartElement.innerHTML = '<div class="alert alert-info">暂无有效磁盘趋势数据</div>';
+                }
+                return;
+            }
+            
+            console.log("图表数据:", chartData);
+            
+            // 图表布局
+            const layout = {
+                title: '磁盘使用趋势',
+                xaxis: {title: '时间'},
+                yaxis: {title: '使用率(%)', range: [0, 100]},
+                margin: {t: 30, l: 50, r: 30, b: 50}
+            };
+            
+            // 绘制图表
+            const chartElement = document.getElementById('disk-chart');
+            console.log("图表元素:", chartElement);
+            if (chartElement) {
+                // 清空图表元素内容
+                chartElement.innerHTML = '';
+                
+                // 确保Plotly已经加载
+                console.log("Plotly是否已加载:", typeof Plotly !== 'undefined');
+                if (typeof Plotly !== 'undefined') {
+                    console.log("调用Plotly.newPlot绘制图表");
+                    Plotly.newPlot('disk-chart', chartData, layout);
+                } else {
+                    console.log("Plotly未加载，无法绘制图表");
+                    chartElement.innerHTML = '<div class="alert alert-warning">图表库加载失败，无法显示图表</div>';
+                }
+            } else {
+                console.log("未找到图表元素");
+            }
+        } catch (error) {
+            console.error('绘制磁盘趋势图表时出错:', error);
+            // 显示错误提示
+            const chartElement = document.getElementById('disk-chart');
+            if (chartElement) {
+                chartElement.innerHTML = '<div class="alert alert-danger">绘制磁盘趋势图表时出错</div>';
             }
         }
     }

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from typing import List, Tuple, Optional, Dict, Any
 from loguru import logger
 
-from ..config.config import Config
+from app.config.config import Config
 
 
 class ChartGenerator:

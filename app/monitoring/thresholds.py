@@ -2,9 +2,9 @@
 from typing import Dict, List
 from loguru import logger
 
-from ..config.config import Config
-from ..database.database_manager import DatabaseManager
-from .collector import SystemCollector
+from app.config.config import Config
+from app.database.database_manager import DatabaseManager
+from app.monitoring.collector import SystemCollector
 
 
 class ThresholdChecker:
@@ -59,7 +59,7 @@ class ThresholdChecker:
         
         try:
             # 使用本地时间
-            from ..utils.helpers import get_current_local_time
+            from app.utils.helpers import get_current_local_time
             current_time = get_current_local_time().strftime('%Y-%m-%d %H:%M:%S')
             payload = {
                 "msgtype": "text",

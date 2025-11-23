@@ -1,19 +1,19 @@
 # app/api/routes.py
 from flask import Blueprint, jsonify, render_template, send_from_directory
 import os
-from ..database.database_manager import DatabaseManager
-from ..config.config import Config
+from app.database.database_manager import DatabaseManager
+from app.config.config import Config
 import json
 import socket
 from loguru import logger
-from ..utils.helpers import format_local_time
+from app.utils.helpers import format_local_time
 
 # 导入处理器
-from .handlers.system_handler import SystemHandler
-from .handlers.process_handler import ProcessHandler
-from .handlers.disk_handler import DiskHandler
-from .handlers.memory_handler import MemoryHandler
-from .handlers.report_handler import ReportHandler
+from app.api.handlers.system_handler import SystemHandler
+from app.api.handlers.process_handler import ProcessHandler
+from app.api.handlers.disk_handler import DiskHandler
+from app.api.handlers.memory_handler import MemoryHandler
+from app.api.handlers.report_handler import ReportHandler
 
 main_bp = Blueprint('main', __name__)
 db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)

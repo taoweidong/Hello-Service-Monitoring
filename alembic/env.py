@@ -22,7 +22,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.models import Base
+# 修复导入路径 - 从app.database.models导入Base
+from app.database.models import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -63,7 +64,7 @@ def run_migrations_online() -> None:
 
     """
     # 获取数据库URL
-    from app.config import Config
+    from app.config.config import Config
     config.set_main_option('sqlalchemy.url', Config.SQLALCHEMY_DATABASE_URI)
     
     connectable = engine_from_config(

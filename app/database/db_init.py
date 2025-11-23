@@ -9,7 +9,7 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, inspect
 from loguru import logger
 
-from ..config.config import Config as AppConfig
+from app.config.config import Config as AppConfig
 
 
 def init_database() -> None:

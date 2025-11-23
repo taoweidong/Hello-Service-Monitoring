@@ -9,7 +9,7 @@ from email.mime.image import MIMEImage
 from typing import Optional, List
 from loguru import logger
 
-from ..config.config import Config
+from app.config.config import Config
 
 
 class EmailSender:

@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 from sqlalchemy import desc, func
 from loguru import logger
 
-from ...database.database_manager import DatabaseManager
-from ...database.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
-from ...monitoring.collector import SystemCollector
-from ...config.config import Config
-from ...utils.helpers import get_current_local_time
-from ...utils.email_utils import EmailSender
-from ...utils.chart_utils import ChartGenerator
+from app.database.database_manager import DatabaseManager
+from app.database.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
+from app.monitoring.collector import SystemCollector
+from app.config.config import Config
+from app.utils.helpers import get_current_local_time
+from app.utils.email_utils import EmailSender
+from app.utils.chart_utils import ChartGenerator
 
 
 class ReportHandler:
@@ -34,7 +34,7 @@ class ReportHandler:
             server_info = SystemCollector.get_detailed_system_info()
             
             # 获取服务器IP地址
-            from ..routes import get_server_ip
+            from app.api.routes import get_server_ip
             server_ip = get_server_ip()
             
             # 获取磁盘信息

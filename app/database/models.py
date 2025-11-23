@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from typing import Optional
-from ..utils.helpers import get_current_local_time
+from app.utils.helpers import get_current_local_time
 
 Base = declarative_base()
 

@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Any
 from loguru import logger
 
-from ...database.database_manager import DatabaseManager
-from ...database.models import SystemInfo, DiskInfo, ProcessInfo
-from ...monitoring.collector import SystemCollector
-from ...config.config import Config
-from ...utils.helpers import get_current_local_time
+from app.database.database_manager import DatabaseManager
+from app.database.models import SystemInfo, DiskInfo, ProcessInfo
+from app.monitoring.collector import SystemCollector
+from app.config.config import Config
+from app.utils.helpers import get_current_local_time
 
 class SystemHandler:
     """系统信息处理器"""

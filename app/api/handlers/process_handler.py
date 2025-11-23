@@ -4,8 +4,8 @@ from sqlalchemy import desc, func
 from typing import Dict, List, Tuple
 from loguru import logger
 
-from ...database.database_manager import DatabaseManager
-from ...database.models import ProcessInfo
+from app.database.database_manager import DatabaseManager
+from app.database.models import ProcessInfo
 
 class ProcessHandler:
     """进程信息处理器"""

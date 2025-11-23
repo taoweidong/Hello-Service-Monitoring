@@ -3,10 +3,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from loguru import logger
 
-from .collector import SystemCollector
-from .thresholds import ThresholdChecker
-from ..database.database_manager import DatabaseManager
-from ..config.config import Config
+from app.monitoring.collector import SystemCollector
+from app.monitoring.thresholds import ThresholdChecker
+from app.database.database_manager import DatabaseManager
+from app.config.config import Config
 
 class MonitoringScheduler:
     """监控调度器"""
@@ -93,7 +93,7 @@ class MonitoringScheduler:
         try:
             self.logger.info("开始生成周报")
             # 调用ReportHandler发送周报邮件
-            from ..api.handlers.report_handler import ReportHandler
+            from app.api.handlers.report_handler import ReportHandler
             report_handler = ReportHandler(self.db_manager)
             result, status_code = report_handler.send_weekly_report()
             

@@ -11,7 +11,7 @@ import sys
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app.db_init import init_database
+from app.database.db_init import init_database
 from loguru import logger
 
 if __name__ == "__main__":

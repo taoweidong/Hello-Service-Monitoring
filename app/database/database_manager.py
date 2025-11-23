@@ -7,9 +7,9 @@ from typing import Generator, Optional, Dict, List
 import os
 from loguru import logger
 
-from .models import Base, SystemInfo, ProcessInfo, DiskInfo, AlertRecord
-from ..config.config import Config
-from ..utils.helpers import get_current_local_time
+from app.database.models import Base, SystemInfo, ProcessInfo, DiskInfo, AlertRecord
+from app.config.config import Config
+from app.utils.helpers import get_current_local_time
 
 
 class DatabaseManager:
