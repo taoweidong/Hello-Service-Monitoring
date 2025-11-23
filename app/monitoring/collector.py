@@ -1,4 +1,4 @@
-# app/collector.py
+# app/monitoring/collector.py
 import psutil
 import platform
 from datetime import datetime
@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, Optional
 import subprocess
 import os
 from loguru import logger
-from .utils import get_current_local_time
+from ..utils.helpers import get_current_local_time
 
 
 class SystemCollector:

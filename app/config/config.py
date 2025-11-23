@@ -1,4 +1,4 @@
-# app/config.py
+# app/config/config.py
 import os
 from typing import Optional
 import tzlocal
@@ -11,7 +11,7 @@ class Config:
     """应用配置类"""
     
     # 获取项目根目录
-    BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     MONITORING_DIR = os.path.join(BASE_DIR, 'app', 'monitoring')
     
     # 确保monitoring目录存在

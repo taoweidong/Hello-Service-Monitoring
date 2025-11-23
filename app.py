@@ -28,8 +28,8 @@ from loguru import logger
 from logging.handlers import RotatingFileHandler
 from app import create_app
 from app.monitoring.scheduler import MonitoringScheduler
-from app.config import Config
-from app.db_init import init_database
+from app.config.config import Config
+from app.database.db_init import init_database
 
 # 设置环境变量以使用本地时区
 os.environ['TZ'] = Config.LOCAL_TIMEZONE

@@ -1,192 +1,49 @@
-# monitoring/scheduler.py
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.executors.pool import ThreadPoolExecutor
-from datetime import datetime
-import logging
-from typing import Optional
+# app/api/handlers/report_handler.py
+from flask import jsonify
+import os
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from jinja2 import Environment, FileSystemLoader
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from typing import Dict, Tuple
+from datetime import datetime, timedelta
+from sqlalchemy import desc, func
+from loguru import logger
 
-from app.collector import SystemCollector
-from app.database import DatabaseManager
-from app.config import Config
+from ...database.database_manager import DatabaseManager
+from ...database.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
+from ...monitoring.collector import SystemCollector
+from ...config.config import Config
+from ...utils.helpers import get_current_local_time
+from ..handlers.system_handler import SystemHandler
+from ..handlers.process_handler import ProcessHandler
+from ..handlers.disk_handler import DiskHandler
+from ..handlers.memory_handler import MemoryHandler
 
 
-class MonitoringScheduler:
-    """监控调度器"""
+class ReportHandler:
+    """报告处理器"""
     
-    def __init__(self):
-        """初始化调度器"""
-        self.scheduler = BackgroundScheduler(
-            executors={'default': ThreadPoolExecutor(20)},
-            job_defaults={'coalesce': False, 'max_instances': 3}
-        )
-        self.db_manager = DatabaseManager(Config.SQLALCHEMY_DATABASE_URI)
-        self.logger = logging.getLogger(__name__)
+    def __init__(self, db_manager: DatabaseManager):
+        self.db_manager = db_manager
+        self.logger = logger
     
-    def start(self):
-        """启动调度器"""
-        # 添加定时任务
-        self.scheduler.add_job(
-            self.collect_system_data,
-            'interval',
-            seconds=30,  # 每30秒收集一次数据
-            id='collect_system_data'
-        )
-        
-        self.scheduler.add_job(
-            self.check_thresholds,
-            'interval',
-            minutes=60,  # 每小时检查一次阈值
-            id='check_thresholds'
-        )
-        
-        self.scheduler.add_job(
-            self.generate_weekly_report,
-            'cron',
-            day_of_week=0,  # 每周日
-            hour=9,  # 上午9点
-            minute=0,
-            id='generate_weekly_report'
-        )
-        
-        self.scheduler.start()
-        self.logger.info("监控调度器已启动")
-    
-    def shutdown(self):
-        """关闭调度器"""
-        self.scheduler.shutdown()
-        self.logger.info("监控调度器已关闭")
-    
-    def collect_system_data(self):
-        """收集系统数据并保存到数据库"""
+    def send_weekly_report(self) -> Tuple[Dict, int]:
+        """发送周报邮件API"""
         try:
-            self.logger.info("开始收集系统数据")
-            
-            # 收集系统信息
-            system_info = SystemCollector.get_system_info()
-            
-            # 收集磁盘信息
-            disk_info = SystemCollector.get_disk_info()
-            
-            # 收集进程信息
-            process_info = SystemCollector.get_process_info()
-            
-            # 保存到数据库
-            self.db_manager.save_system_info(system_info)
-            self.db_manager.save_disk_info(disk_info)
-            self.db_manager.save_process_info(process_info)
-            
-            self.logger.info("系统数据收集完成")
-        except Exception as e:
-            self.logger.error(f"收集系统数据时出错: {e}")
-    
-    def check_thresholds(self):
-        """检查资源使用阈值并发送预警"""
-        try:
-            self.logger.info("开始检查资源阈值")
-            
-            # 获取最新的系统信息
-            system_info = SystemCollector.get_system_info()
-            disk_info = SystemCollector.get_disk_info()
-            
-            # 检查内存使用率
-            memory_percent = system_info.get('memory_percent', 0)
-            if memory_percent > Config.MEMORY_THRESHOLD:
-                message = f"内存使用率过高: {memory_percent}%"
-                self.db_manager.save_alert_record("memory", message)
-                self.send_dingtalk_alert(message)
-            
-            # 检查磁盘使用率
-            for disk in disk_info:
-                disk_percent = disk.get('percent', 0)
-                if disk_percent > Config.DISK_THRESHOLD:
-                    message = f"磁盘 {disk['device']} 使用率过高: {disk_percent}%"
-                    self.db_manager.save_alert_record("disk", message)
-                    self.send_dingtalk_alert(message)
-            
-            self.logger.info("资源阈值检查完成")
-        except Exception as e:
-            self.logger.error(f"检查资源阈值时出错: {e}")
-    
-    def send_dingtalk_alert(self, message: str):
-        """发送钉钉预警消息"""
-        import requests
-        import json
-        
-        if not Config.DINGTALK_WEBHOOK:
-            self.logger.warning("未配置钉钉Webhook，无法发送预警消息")
-            return
-        
-        try:
-            payload = {
-                "msgtype": "text",
-                "text": {
-                    "content": f"[服务器监控预警] {message}\n时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-                }
-            }
-            
-            response = requests.post(Config.DINGTALK_WEBHOOK, json=payload)
-            if response.status_code == 200:
-                self.logger.info("钉钉预警消息发送成功")
-            else:
-                self.logger.error(f"钉钉预警消息发送失败: {response.text}")
-        except Exception as e:
-            self.logger.error(f"发送钉钉预警消息时出错: {e}")
-    
-    def generate_weekly_report(self):
-        """生成周报"""
-        try:
-            self.logger.info("开始生成周报")
-            
             # 1. 从数据库获取一周的数据
-            weekly_data = self._get_weekly_data()
+            week_ago = datetime.now() - timedelta(days=7)
+            two_weeks_ago = datetime.now() - timedelta(days=14)
             
-            # 2. 生成图表
-            chart_path = self._generate_weekly_chart(weekly_data)
-            
-            # 3. 发送邮件
-            self._send_weekly_report(weekly_data, chart_path)
-            
-            self.logger.info("周报生成完成")
-        except Exception as e:
-            self.logger.error(f"生成周报时出错: {e}")
-    
-    def send_weekly_report_manual(self):
-        """手动发送周报（可从外部调用）"""
-        try:
-            self.logger.info("开始手动生成周报")
-            
-            # 1. 从数据库获取一周的数据
-            weekly_data = self._get_weekly_data()
-            
-            # 2. 生成图表
-            chart_path = self._generate_weekly_chart(weekly_data)
-            
-            # 3. 发送邮件
-            self._send_weekly_report(weekly_data, chart_path)
-            
-            self.logger.info("手动生成周报完成")
-            return True
-        except Exception as e:
-            self.logger.error(f"手动生成周报时出错: {e}")
-            return False
-
-    def _get_weekly_data(self):
-        """获取一周的数据"""
-        from datetime import datetime, timedelta
-        from sqlalchemy import desc, func
-        from app.models import SystemInfo, DiskInfo, ProcessInfo, AlertRecord
-        from app.collector import SystemCollector
-        from app.config import Config
-        from app.routes import get_server_ip
-        
-        # 计算一周前的时间
-        week_ago = datetime.now() - timedelta(days=7)
-        
-        try:
             # 获取服务器详细信息
             server_info = SystemCollector.get_detailed_system_info()
             
             # 获取服务器IP地址
+            from ..routes import get_server_ip
             server_ip = get_server_ip()
             
             with self.db_manager.get_session() as session:
@@ -257,9 +114,6 @@ class MonitoringScheduler:
                 ]
                 
                 # 计算变化趋势（与上周相比）
-                two_weeks_ago = datetime.now() - timedelta(days=14)
-                
-                # 上周平均值
                 last_week_cpu_avg = session.query(func.avg(SystemInfo.cpu_percent)).filter(
                     SystemInfo.timestamp >= two_weeks_ago,
                     SystemInfo.timestamp < week_ago
@@ -280,7 +134,7 @@ class MonitoringScheduler:
                 memory_change = round(memory_avg - last_week_memory_avg, 2)
                 disk_change = round(disk_max - last_week_disk_max, 2)
                 
-                return {
+                weekly_data = {
                     'report_date': datetime.now().strftime('%Y年%m月%d日'),
                     'server_info': server_info,
                     'server_ip': server_ip,
@@ -293,41 +147,8 @@ class MonitoringScheduler:
                     'alerts': alerts_data,
                     'top_processes': top_processes_data
                 }
-        except Exception as e:
-            self.logger.error(f"获取周报数据时出错: {e}")
-            # 返回默认数据
-            return {
-                'report_date': datetime.now().strftime('%Y年%m月%d日'),
-                'server_info': {},
-                'server_ip': 'unknown',
-                'cpu_avg': 0,
-                'memory_avg': 0,
-                'disk_max': 0,
-                'cpu_change': 0,
-                'memory_change': 0,
-                'disk_change': 0,
-                'alerts': [],
-                'top_processes': []
-            }
-
-    def _generate_weekly_chart(self, weekly_data):
-        """生成周报图表"""
-        try:
-            import matplotlib
-            matplotlib.use('Agg')  # 使用非交互式后端
-            import matplotlib.pyplot as plt
-            import numpy as np
-            from datetime import datetime, timedelta
-            from sqlalchemy import func
-            from app.models import SystemInfo
             
-            # 设置中文字体
-            plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
-            plt.rcParams['axes.unicode_minus'] = False
-            
-            # 计算一周前的时间
-            week_ago = datetime.now() - timedelta(days=7)
-            
+            # 2. 生成图表
             # 获取一周的历史数据
             with self.db_manager.get_session() as session:
                 history_data = session.query(
@@ -337,6 +158,10 @@ class MonitoringScheduler:
                 ).filter(
                     SystemInfo.timestamp >= week_ago
                 ).order_by(SystemInfo.timestamp).all()
+            
+            # 设置中文字体
+            plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
+            plt.rcParams['axes.unicode_minus'] = False
             
             if not history_data:
                 # 如果没有数据，创建一个空图表
@@ -365,7 +190,6 @@ class MonitoringScheduler:
                 fig.autofmt_xdate()
             
             # 保存图表
-            import os
             chart_dir = os.path.join(Config.BASE_DIR, 'temp')
             if not os.path.exists(chart_dir):
                 os.makedirs(chart_dir)
@@ -375,26 +199,12 @@ class MonitoringScheduler:
             plt.savefig(chart_path, dpi=300, bbox_inches='tight')
             plt.close()
             
-            return chart_path
-        except Exception as e:
-            self.logger.error(f"生成周报图表时出错: {e}")
-            return None
-
-    def _send_weekly_report(self, weekly_data, chart_path):
-        """发送周报邮件"""
-        import smtplib
-        from email.mime.multipart import MIMEMultipart
-        from email.mime.text import MIMEText
-        from email.mime.image import MIMEImage
-        from jinja2 import Environment, FileSystemLoader
-        import os
-        
-        # 检查邮件配置
-        if not Config.MAIL_SERVER or not Config.MAIL_USERNAME or not Config.MAIL_PASSWORD:
-            self.logger.warning("邮件配置不完整，无法发送周报")
-            return
-        
-        try:
+            # 3. 发送邮件
+            # 检查邮件配置
+            if not Config.MAIL_SERVER or not Config.MAIL_USERNAME or not Config.MAIL_PASSWORD:
+                self.logger.warning("邮件配置不完整，无法发送周报")
+                return jsonify({'error': '邮件配置不完整'}), 500
+            
             # 渲染邮件模板
             template_dir = os.path.join(Config.BASE_DIR, 'templates')
             env = Environment(loader=FileSystemLoader(template_dir))
@@ -427,6 +237,8 @@ class MonitoringScheduler:
             server.send_message(msg)
             server.quit()
             
-            self.logger.info("周报邮件发送成功")
+            self.logger.info("手动触发周报邮件发送成功")
+            return jsonify({'message': '周报邮件发送成功'}), 200
         except Exception as e:
             self.logger.error(f"发送周报邮件时出错: {e}")
+            return jsonify({'error': str(e)}), 500

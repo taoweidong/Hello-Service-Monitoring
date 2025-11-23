@@ -1,9 +1,9 @@
-# app/models.py
+# app/database/models.py
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from typing import Optional
-from .utils import get_current_local_time
+from ..utils.helpers import get_current_local_time
 
 Base = declarative_base()
 
@@ -21,7 +21,7 @@ class SystemInfo(Base):
     load_average = Column(String(100))  # 系统负载
     
     def __repr__(self) -> str:
-        return f"<SystemInfo(id={self.id}, timestamp={self.timestamp}, memory={self.memory_percent}%)"
+        return f"<SystemInfo(id={self.id}, timestamp={self.timestamp}, memory={self.memory_percent}%"
 
 
 class ProcessInfo(Base):
@@ -55,7 +55,7 @@ class DiskInfo(Base):
     percent = Column(Float)  # 使用百分比
     
     def __repr__(self) -> str:
-        return f"<DiskInfo(id={self.id}, device={self.device}, percent={self.percent}%)"
+        return f"<DiskInfo(id={self.id}, device={self.device}, percent={self.percent}%"
 
 
 class AlertRecord(Base):

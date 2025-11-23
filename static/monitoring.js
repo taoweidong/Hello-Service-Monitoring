@@ -111,7 +111,7 @@ class MonitoringDataLoader {
         try {
             // 并行获取CPU、内存和磁盘数据
             const [cpuResponse, memoryResponse, diskResponse] = await Promise.all([
-                fetch('/api/system/cpu'),
+                fetch('/api/cpu-info'),
                 fetch('/api/system/memory'),
                 fetch('/api/system/disk')
             ]);

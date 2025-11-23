@@ -1,25 +1,26 @@
-# app/db_init.py
+# app/database/db_init.py
 """数据库初始化脚本"""
 
 import os
-from alembic.config import Config
+from alembic.config import Config as AlembicConfig
 from alembic import command
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, inspect
 from loguru import logger
 
-from .config import Config as AppConfig
+from ..config.config import Config as AppConfig
 
 
-def init_database():
+def init_database() -> None:
     """初始化数据库，运行所有未应用的迁移"""
     try:
         # 获取项目根目录
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(base_dir)  # 因为我们在database子目录中，需要再上一级
         
         # 配置Alembic
-        alembic_cfg = Config(os.path.join(base_dir, "alembic.ini"))
+        alembic_cfg = AlembicConfig(os.path.join(base_dir, "alembic.ini"))
         alembic_cfg.set_main_option("script_location", os.path.join(base_dir, "alembic"))
         
         # 设置数据库URL
@@ -56,7 +57,7 @@ def init_database():
         raise
 
 
-def check_database_exists():
+def check_database_exists() -> bool:
     """检查数据库是否存在"""
     try:
         engine = create_engine(AppConfig.SQLALCHEMY_DATABASE_URI)

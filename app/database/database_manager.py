@@ -1,15 +1,15 @@
-# app/database.py
+# app/database/database_manager.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from contextlib import contextmanager
-from typing import Generator, Optional
+from typing import Generator, Optional, Dict, List
 import os
 from loguru import logger
 
-from .models import Base
-from .config import Config
-from .utils import get_current_local_time
+from .models import Base, SystemInfo, ProcessInfo, DiskInfo, AlertRecord
+from ..config.config import Config
+from ..utils.helpers import get_current_local_time
 
 
 class DatabaseManager:
@@ -37,9 +37,8 @@ class DatabaseManager:
         finally:
             session.close()
     
-    def save_system_info(self, system_info: dict):
+    def save_system_info(self, system_info: Dict) -> None:
         """保存系统信息"""
-        from .models import SystemInfo
         try:
             with self.get_session() as session:
                 system_record = SystemInfo(
@@ -54,9 +53,8 @@ class DatabaseManager:
         except Exception as e:
             self.logger.error(f"保存系统信息时出错: {e}")
     
-    def save_process_info(self, processes: list):
+    def save_process_info(self, processes: List[Dict]) -> None:
         """保存进程信息"""
-        from .models import ProcessInfo
         try:
             with self.get_session() as session:
                 for proc in processes:
@@ -73,9 +71,8 @@ class DatabaseManager:
         except Exception as e:
             self.logger.error(f"保存进程信息时出错: {e}")
     
-    def save_disk_info(self, disks: list):
+    def save_disk_info(self, disks: List[Dict]) -> None:
         """保存磁盘信息"""
-        from .models import DiskInfo
         try:
             with self.get_session() as session:
                 for disk in disks:
@@ -92,9 +89,8 @@ class DatabaseManager:
         except Exception as e:
             self.logger.error(f"保存磁盘信息时出错: {e}")
     
-    def save_alert_record(self, alert_type: str, message: str, is_sent: int = 0):
+    def save_alert_record(self, alert_type: str, message: str, is_sent: int = 0) -> None:
         """保存预警记录"""
-        from .models import AlertRecord
         try:
             with self.get_session() as session:
                 alert_record = AlertRecord(
