@@ -2,9 +2,6 @@
 from flask import jsonify
 import os
 from jinja2 import Environment, FileSystemLoader
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
 from typing import Dict, Tuple
 from datetime import datetime, timedelta
 from sqlalchemy import desc, func
@@ -17,10 +14,6 @@ from ...config.config import Config
 from ...utils.helpers import get_current_local_time
 from ...utils.email_utils import EmailSender
 from ...utils.chart_utils import ChartGenerator
-from ..handlers.system_handler import SystemHandler
-from ..handlers.process_handler import ProcessHandler
-from ..handlers.disk_handler import DiskHandler
-from ..handlers.memory_handler import MemoryHandler
 
 
 class ReportHandler:

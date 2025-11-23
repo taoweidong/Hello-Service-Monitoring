@@ -9,8 +9,6 @@ from ...database.database_manager import DatabaseManager
 from ...database.models import DiskInfo, SystemInfo
 from ...monitoring.collector import SystemCollector
 from ...config.config import Config
-from ...utils.helpers import get_current_local_time
-
 
 class DiskHandler:
     """磁盘信息处理器"""

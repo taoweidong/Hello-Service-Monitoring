@@ -6,8 +6,6 @@ from typing import Dict, List, Tuple, Optional
 import subprocess
 import os
 from loguru import logger
-from ..utils.helpers import get_current_local_time
-
 
 class SystemCollector:
     """系统信息采集器"""

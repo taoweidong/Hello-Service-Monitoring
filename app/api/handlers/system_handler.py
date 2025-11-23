@@ -9,8 +9,7 @@ from ...database.database_manager import DatabaseManager
 from ...database.models import SystemInfo, DiskInfo, ProcessInfo
 from ...monitoring.collector import SystemCollector
 from ...config.config import Config
-from ...utils.helpers import get_current_local_time, format_local_time
-
+from ...utils.helpers import get_current_local_time
 
 class SystemHandler:
     """系统信息处理器"""

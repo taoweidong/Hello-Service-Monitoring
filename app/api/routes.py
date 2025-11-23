@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, render_template, send_from_directory
 import os
 from ..database.database_manager import DatabaseManager
 from ..config.config import Config
-from sqlalchemy import desc
 import json
 import socket
 from loguru import logger

@@ -1,17 +1,12 @@
 # app/monitoring/scheduler.py
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
-from datetime import datetime
-import time
 from loguru import logger
-from typing import Optional
 
 from .collector import SystemCollector
 from .thresholds import ThresholdChecker
 from ..database.database_manager import DatabaseManager
 from ..config.config import Config
-from ..utils.helpers import get_current_local_time
-
 
 class MonitoringScheduler:
     """监控调度器"""

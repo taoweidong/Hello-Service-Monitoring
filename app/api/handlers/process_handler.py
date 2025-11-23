@@ -6,8 +6,6 @@ from loguru import logger
 
 from ...database.database_manager import DatabaseManager
 from ...database.models import ProcessInfo
-from ...utils.helpers import get_current_local_time
-
 
 class ProcessHandler:
     """进程信息处理器"""
