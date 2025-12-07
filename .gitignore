@@ -204,7 +204,7 @@ htmlcov/
 *.env.*.local
 
 # Alembic
-alembic/versions/*.py
+
 !alembic/versions/__init__.py
 
 # Application specific

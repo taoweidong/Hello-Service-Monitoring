@@ -9,6 +9,9 @@ import os
 import sys
 import io
 
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 # 设置标准输出编码为UTF-8
 if sys.stdout.encoding != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -21,8 +24,6 @@ in_venv = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.ba
 if not in_venv:
     print("警告：未在虚拟环境中运行，可能会遇到依赖问题")
 
-import os
-import sys
 import time
 from loguru import logger
 from logging.handlers import RotatingFileHandler

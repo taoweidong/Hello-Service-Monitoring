@@ -2,6 +2,10 @@
 """数据库初始化脚本"""
 
 import os
+import sys
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from alembic.config import Config as AlembicConfig
 from alembic import command
 from alembic.runtime.migration import MigrationContext
